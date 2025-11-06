@@ -1,0 +1,34 @@
+<div class="p-6 bg-white rounded-lg border-l-4 border-l-[#02ab74]">
+    <div class="flex items-center justify-between mb-4">
+        <!-- Left: Title & Description -->
+        <div>
+            <h3 class="text-lg font-semibold text-[#070025] mb-1">
+                Progreso General
+            </h3>
+            <p class="text-gray-600 text-sm">
+                {{ progress.completed }} de {{ progress.total }} documentos completados
+            </p>
+        </div>
+
+        <!-- Right: Percentage & Badge -->
+        <div class="text-right">
+            <div class="text-2xl font-bold text-[#02ab74] mb-1">
+                {{ progress.percentage | number: '1.0-0' }}%
+            </div>
+            <span class="px-2 py-1 rounded-md text-xs font-medium" [ngClass]="utils.getStatusBadgeClass(isCompleted)">
+                {{ utils.getStatusLabel(isCompleted) }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+        <div class="bg-[#02ab74] h-3 rounded-full transition-all" [style.width.%]="progress.percentage"
+            role="progressbar" [attr.aria-valuenow]="progress.percentage" [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="100" [attr.aria-label]="'Progreso: ' + progress.percentage + '%'">
+        </div>
+    </div>
+
+    <!-- Componente reutilizable -->
+    <app-deadline-indicator [convocatoria]="convocatoria"></app-deadline-indicator>
+</div>

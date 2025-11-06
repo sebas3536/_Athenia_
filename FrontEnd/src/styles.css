@@ -1,0 +1,239 @@
+
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+:root {
+    --primary-color: #02ab74;
+    --secondary-color: #190379;
+    --accent-color: #7209b7;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --success-color: #4cc9f0;
+    --warning-color: #f72585;
+    --pdf-color: #e74c3c;
+    --docx-color: #3498db;
+    --txt-color: #2ecc71;
+    --btn-hover-color: #070025;
+    --card-hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    --glass-bg: rgba(255, 255, 255, 0);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --transition-ease: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    --upload-area-hover-bg: #e8f4ff;
+    --small-text-color: #6c757d;
+    --filter-btn-border: #e9ecef;
+    --filter-btn-text-color: rgb(0, 0, 0);
+    --filter-btn-hover-text-color: rgb(0, 0, 0);
+    --card-bg: white;
+    --text-color: #212529;
+    --meta-text-color: #666;
+    --doc-actions-border: #eee;
+    --action-btn-color: #666;
+    --assistant-bg: linear-gradient(to right, #4cc9f0, #4361ee);
+
+    --header-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --sidebar-border-color: #eaeaea;
+    --sidebar-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --nav-item-color: #212529;
+    --nav-item-separator: rgba(0, 0, 0, 0.05);
+    --logout-color: #ff0000;
+    --logout-hover-bg: #000000;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+    color: var(--dark-color);
+    background: var(--light-color);
+    transition: var(--transition-ease);
+}
+
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #028a5e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* Content: La columna derecha (sección del dashboard) */
+.content {
+    width: 100%;
+    background: var(--light-color);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 100vh;
+}
+
+/* Modo oscuro */
+body.dark {
+    --primary-color: #00b894;
+    --secondary-color: #dfe6e9;
+    --accent-color: #81ecec;
+    --light-color: #2d3436;
+    --dark-color: #f5f6fa;
+    --success-color: #00cec9;
+    --warning-color: #fab1a0;
+    --pdf-color: #e17055;
+    --docx-color: #0984e3;
+    --txt-color: #55efc4;
+    --btn-hover-color: #ffffff;
+    --card-hover-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+    --glass-bg: rgba(45, 52, 54, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-sm: 0 2px 10px rgba(255, 255, 255, 0.1);
+    --shadow-md: 0 4px 20px rgba(255, 255, 255, 0.15);
+
+    background: var(--dark-color);
+    color: var(--light-color);
+    transition: var(--transition-ease);
+
+    --upload-area-hover-bg: #07314d;
+    --small-text-color: #adb5bd;
+    --filter-btn-border: #444;
+    --filter-btn-text-color: #ddd;
+    --filter-btn-hover-text-color: #fff;
+    --card-bg: #2c2f33;
+    --text-color: #ddd;
+    --meta-text-color: #aaa;
+    --doc-actions-border: #444;
+    --action-btn-color: #bbb;
+    --assistant-bg: linear-gradient(to right, #2196f3, #0d47a1);
+
+    --header-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --sidebar-border-color: #444;
+    --sidebar-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --nav-item-color: #ddd;
+    --nav-item-separator: rgba(255, 255, 255, 0.1);
+    --logout-color: #ff6666;
+    --logout-hover-bg: #440000;
+    --light-color: #f8f9fa;
+    /* Si quieres que el texto blanco del header cambie un poco */
+}
+
+body.dark::-webkit-scrollbar-track {
+    background: #2d3436;
+}
+
+body.dark::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+}
+
+body.dark::-webkit-scrollbar-thumb:hover {
+    background: #00b894;
+}
+
+/* Actualiza colores que usan variables para que cambien con el tema */
+
+.section-title {
+    color: var(--secondary-color);
+    border-bottom-color: var(--accent-color);
+}
+
+.content {
+    background: var(--light-color);
+    color: var(--dark-color);
+    transition: var(--transition-ease);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #eaeaea;
+        padding: 1rem;
+    }
+
+    .nav-item {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .assistant-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .assistant-text {
+        flex-grow: 0;
+    }
+
+    .mic-btn {
+        margin-top: 10px;
+    }
+
+    .landing-header {
+        flex-direction: column;
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .nav-links {
+        margin-top: 1rem;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-links a {
+        margin: 5px 0;
+    }
+
+    .hero-content h2 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .cta-buttons .btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+
+    .features-grid,
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,162 @@
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+
+<h1 class="text-[#070025] mb-2 text-2xl font-bold">Buscar Documentos</h1>
+<p class="text-gray-600 mb-6">Encuentra documentos utilizando búsqueda avanzada</p>
+
+<div class="p-6 border border-gray-200 rounded-xl space-y-6">
+  <!-- Barra de búsqueda -->
+  <div class="flex flex-col lg:flex-row gap-4 items-center">
+    <div class="relative w-full flex-1">
+      <lucide-angular name="search"
+        class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
+      <input type="text" placeholder="Buscar por nombre, contenido, etiquetas..." [(ngModel)]="searchQuery"
+        (keyup.enter)="searchDocuments()"
+        class="pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-2 focus:ring-[#02ab74] w-full" />
+    </div>
+    <button (click)="searchDocuments()"
+      class="bg-[#02ab74] hover:bg-[#028a5f] text-white rounded-lg px-6 py-2 min-w-[120px] focus:outline-none focus:ring-2 focus:ring-[#02ab74]">
+      Buscar
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="pt-6 border-t border-gray-200">
+    <div class="flex items-center gap-2 mb-4 text-[#070025] font-medium">
+      <lucide-angular class="w-6 h-6 " name="filter"></lucide-angular>
+      <span>Filtros Avanzados</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm text-gray-600 mb-2">Tipo de Archivo</label>
+        <select [(ngModel)]="selectedType" (change)="onFilterChange()"
+          class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#02ab74]">
+          <option [ngValue]="undefined">Todos</option>
+          <option [ngValue]="'pdf'">PDF</option>
+          <option [ngValue]="'docx'">DOCX</option>
+          <option [ngValue]="'txt'">TXT</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-gray-600 mb-2">Fecha</label>
+        <select [(ngModel)]="selectedDate" (change)="onFilterChange()"
+          class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#02ab74]">
+          <option value="">Cualquier fecha</option>
+          <option value="today">Hoy</option>
+          <option value="week">Última semana</option>
+          <option value="month">Último mes</option>
+          <option value="year">Último año</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cargando -->
+<div *ngIf="loading" class="text-center py-12 flex flex-col items-center justify-center">
+  <lucide-angular name="loader" class="w-20 h-20 text-gray-500 animate-spin"></lucide-angular>
+  <p class="mt-3 text-gray-600">Cargando...</p>
+</div>
+
+<!-- Resultados -->
+<div *ngIf="hasSearched && !loading" class="mt-10">
+  <div *ngIf="filteredResults.length > 0; else noResults">
+    <div class="mb-4">
+      <p class="text-gray-600">
+        Se encontraron <span class="text-[#02ab74] font-medium">{{ totalItems }}</span> resultados para
+        "<span class="italic">{{ searchQuery }}</span>"
+      </p>
+    </div>
+    <div class="space-y-6">
+      <div *ngFor="let doc of filteredResults"
+        class="p-6 border border-gray-200 rounded-xl hover:shadow-md transition-all">
+        <div class="flex items-start gap-4">
+          <div class="w-20 h-20 p-3 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i [ngClass]="getDocumentIconClass(doc)" class="text-4xl"></i>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-4 mb-2">
+              <div>
+                <h3 class="text-[#070025] font-semibold">{{ doc.filename }}</h3>
+                <p *ngIf="isAdmin" class="text-gray-400 text-xs mt-1 italic">
+                  Subido por: {{ doc.uploaded_by_name || 'Desconocido' }}
+                </p>
+
+              </div>
+              <span [ngClass]="getFileTypeColorClass(doc)" class="px-3 py-1 text-sm rounded-full whitespace-nowrap">
+                {{ doc.file_type.toUpperCase() }}
+              </span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-3">
+              <div class="flex items-center gap-1">
+                <lucide-angular name="calendar" class="w-4 h-4 text-gray-500"></lucide-angular>
+                <span>{{ formatDate(doc.created_at) }}</span>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <button class="action-btn text-blue-500 hover:text-blue-700" (click)="viewDocument(doc)"
+                title="Ver documento">
+                <lucide-angular name="eye" class="w-5 h-5 text-blue-500 hover:text-blue-700"></lucide-angular>
+              </button>
+              <button class="action-btn text-green-500 hover:text-green-700" (click)="downloadDocument(doc)"
+                title="Descargar documento">
+                <lucide-angular name="download" class="w-5 h-5 text-green-500 hover:text-green-700"></lucide-angular>
+              </button>
+              <button class="action-btn text-red-500 hover:text-red-700" (click)="deleteDocument(doc)"
+                title="Eliminar documento">
+                <lucide-angular name="trash2" class="w-5 h-5 text-red-500 hover:text-red-700"></lucide-angular>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="mt-10 flex justify-center">
+      <nav class="flex flex-wrap items-center gap-2">
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0"
+          class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+          Anterior
+        </button>
+        <button *ngFor="let page of getPages(); let i = index" (click)="onPageChange(page - 1)" [ngClass]="{
+        'bg-[#02ab74] text-white': currentPage + 1 === page,
+        'bg-white text-gray-800': currentPage + 1 !== page
+      }" class="px-4 py-2 border border-gray-300 rounded-lg transition-all duration-200">
+          {{ page }}
+        </button>
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
+          class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+          Siguiente
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Sin resultados -->
+  <ng-template #noResults>
+    <div class="p-12 border border-gray-200 rounded-xl text-center mt-10 flex flex-col items-center justify-center">
+      <lucide-angular name="search" class="stroke-gray-300 w-20 h-20 mb-4"></lucide-angular>
+      <h3 class="text-[#070025] text-xl font-semibold mb-2">No se encontraron resultados</h3>
+      <p class="text-gray-600">
+        {{ searchQuery ? `No hay documentos que coincidan con "${searchQuery}"` : 'Ingresa un término de búsqueda para
+        comenzar' }}
+      </p>
+    </div>
+  </ng-template>
+
+</div>
+
+<!-- Tips -->
+<div *ngIf="!hasSearched && !loading" class="p-6 border border-gray-200 rounded-xl mt-10">
+  <h3 class="text-[#070025] text-lg font-semibold mb-4">Consejos de Búsqueda</h3>
+  <div class="space-y-3 text-gray-600">
+    <p>• Usa palabras clave específicas para mejores resultados</p>
+    <p>• Combina filtros para búsquedas más precisas</p>
+    <p>• Puedes buscar por nombre de archivo o contenido del documento</p>
+    <p>• Las etiquetas te ayudan a organizar y encontrar documentos rápidamente</p>
+  </div>
+</div>

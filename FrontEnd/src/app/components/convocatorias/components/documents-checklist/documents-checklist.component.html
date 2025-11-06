@@ -1,0 +1,25 @@
+<div class="p-6 bg-white rounded-lg border">
+    <h3 class="text-lg font-semibold text-[#070025] mb-4 flex items-center">
+        <lucide-angular name="FileText" class="w-5 h-5 mr-2 text-[#02ab74]"></lucide-angular>
+        Checklist de Documentos
+    </h3>
+
+    <!-- Empty State -->
+    <div *ngIf="documents.length === 0" class="text-center py-12 border-2 border-dashed rounded-lg">
+        <lucide-angular name="AlertCircle" class="w-12 h-12 mx-auto mb-3 text-gray-400"></lucide-angular>
+        <p class="text-gray-600 mb-4">No hay documentos en el checklist</p>
+        <button (click)="openAddDocument.emit()"
+            class="flex items-center gap-2 px-4 py-2 border-[#02ab74] text-[#02ab74] hover:bg-[#02ab74]/10 border rounded-lg transition-colors mx-auto">
+            <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+            Agregar Primer Documento
+        </button>
+    </div>
+
+    <!-- Lista de documentos -->
+    <div *ngIf="documents.length > 0" class="space-y-3">
+        <app-document-item *ngFor="let doc of documents; trackBy: trackByFn" [document]="doc" [isLoading]="isLoading"
+            (uploadFile)="uploadFile.emit($event)" (downloadFile)="downloadFile.emit($event)"
+            (deleteDocument)="deleteDocument.emit($event)">
+        </app-document-item>
+    </div>
+</div>

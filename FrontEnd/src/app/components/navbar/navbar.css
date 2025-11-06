@@ -1,0 +1,111 @@
+/* -------------------------------------------
+   AJUSTE DE LAYOUT CORREGIDO
+   ------------------------------------------- */
+
+/* Header: Debe ocupar todo el ancho, altura 70px, fijo arriba. */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 70px;
+    width: 280px;
+    background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+    color: var(--light-color);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+    box-shadow: var(--header-shadow, 0 10px 30px rgba(0, 0, 0, 0.1));
+}
+
+/* Logo dentro del Header: Alineación a la izquierda */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo i {
+    font-size: 2rem;
+}
+
+.logo h1 {
+    font-size: 18px; /* Ajuste a un tamaño más visible */
+    font-weight: 600;
+}
+
+/* Sidebar: Fijo a la izquierda, empezando justo debajo del Header */
+.sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 280px;
+    height: calc(100vh - 70px); /* CRÍTICO: Ocupa la altura restante de la pantalla */
+    background: var(--light-color);
+    padding: 1.5rem;
+    border-right: 1px solid var(--sidebar-border-color, #eaeaea);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--sidebar-shadow, 0 10px 30px rgba(0, 0, 0, 0.1));
+    overflow-y: auto;
+    z-index: 999;
+    flex-shrink: 0;
+}
+
+/* Main Content: El contenedor de las dos columnas (Sidebar y Content) */
+.main-content {
+    height: 100vh;
+    width: 100%;
+    padding-top: 0px; /* CRÍTICO: para que el contenido suba al máximo */
+    padding-left: 280px;
+    display: flex;
+    flex-direction: row;
+}
+
+/* -------------------------------------------
+   ESTILOS DE NAVEGACIÓN LATERAL
+   ------------------------------------------- */
+
+.nav-item {
+    all: unset;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--nav-item-color, #212529);
+}
+
+.nav-item.active,
+.nav-item:hover {
+    background: var(--primary-color);
+    color: var(--light-color);
+    transform: none; /* Quitamos la animación de translateX para un look más limpio */
+}
+
+/* Separadores sutiles (Si los quieres más marcados, puedes usar border-bottom aquí, pero con margin-bottom es suficiente) */
+.nav-item:not(.logout-item):after {
+    content: "";
+    display: block;
+    height: 1px;
+    background: var(--nav-item-separator, rgba(0, 0, 0, 0.05));
+    margin: 8px 0;
+}
+
+.logout-item {
+    color: var(--logout-color, #ff0000); /* Rojo para Cerrar Sesión */
+}
+
+.logout-item:hover {
+    background-color: var(--logout-hover-bg, #000000);
+}
+/* -------------------------------------------
+   ESTILOS ADICIONALES PARA TEMAS Y RESPONSIVE
+   ------------------------------------------- */
+   

@@ -1,0 +1,176 @@
+<div class="container mx-auto px-4">
+    <!-- Vista de gestión de documentos -->
+    <section id="documentos-view" class="block">
+        <div>
+            <h1 id="document-title" class="text-[#070025] mb-2 text-2xl font-bold">Gestión de Documentos</h1>
+            <p class="text-gray-600 mb-6">Visualiza, carga y organiza tus documentos</p>
+        </div>
+
+        <!-- Área de carga de archivos -->
+        <div class="bg-gray-50 border-2 border-dashed border-gray-400 rounded-lg p-6 text-center mb-8 cursor-pointer transition-all duration-300 hover:border-blue-500 hover:bg-blue-50"
+            [class.border-blue-500]="isDragOver" [class.bg-blue-50]="isDragOver" (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+
+            <div class="flex justify-center items-center mb-4">
+                <lucide-angular name="CloudUpload" class="w-15 h-15"></lucide-angular>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Arrastra y suelta tus archivos aquí</h3>
+            <p class="mb-4">o</p>
+            <button
+                class="bg-blue-500 text-white border-none py-3 px-6 rounded-md cursor-pointer text-base font-semibold inline-flex items-center gap-2 transition-all duration-300 hover:bg-teal-500 hover:-translate-y-0.5"
+                (click)="openFileInput()">
+                <lucide-angular name="FolderOpen"></lucide-angular>
+                Seleccionar archivos
+            </button>
+            <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" multiple />
+            <p class="mt-2.5 text-sm text-gray-600">Formatos soportados: PDF, DOCX, TXT (Máx. 10MB por archivo)</p>
+        </div>
+
+        <!-- Filtros de documentos -->
+        <div class="flex gap-4 mb-6 flex-wrap">
+            <button
+                class="py-2 px-4 rounded-full border border-gray-300 cursor-pointer flex items-center gap-1 transition-all duration-300 text-sm"
+                (click)="filterDocuments('all')"
+                [ngClass]="{'bg-blue-500 text-white border-blue-500': activeFilter === 'all', 'bg-white text-gray-800': activeFilter !== 'all'}">
+                <i class="fas fa-folder"></i> Todos
+            </button>
+            <button
+                class="py-2 px-4 rounded-full border border-gray-300 cursor-pointer flex items-center gap-1 transition-all duration-300 text-sm"
+                (click)="filterDocuments('pdf')"
+                [ngClass]="{'bg-blue-500 text-white border-blue-500': activeFilter === 'pdf', 'bg-white text-red-500 border-gray-300': activeFilter !== 'pdf'}">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button
+                class="py-2 px-4 rounded-full border border-gray-300 cursor-pointer flex items-center gap-1 transition-all duration-300 text-sm"
+                (click)="filterDocuments('docx')"
+                [ngClass]="{'bg-blue-500 text-white border-blue-500': activeFilter === 'docx', 'bg-white text-blue-600 border-gray-300': activeFilter !== 'docx'}">
+                <i class="fas fa-file-word"></i> DOCX
+            </button>
+            <button
+                class="py-2 px-4 rounded-full border border-gray-300 cursor-pointer flex items-center gap-1 transition-all duration-300 text-sm"
+                (click)="filterDocuments('txt')"
+                [ngClass]="{'bg-blue-500 text-white border-blue-500': activeFilter === 'txt', 'bg-white text-green-500 border-gray-300': activeFilter !== 'txt'}">
+                <i class="fas fa-file-alt"></i> TXT
+            </button>
+        </div>
+
+        <!-- Grid de documentos -->
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5"
+            *ngIf="paginatedDocuments.length > 0; else noDocuments">
+            <div *ngIf="loading" class="col-span-full text-center py-8">
+                <i class="fas fa-spinner fa-spin"></i> Cargando documentos...
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-lg"
+                *ngFor="let document of paginatedDocuments">
+
+                <div class="p-4 text-white flex items-center gap-2.5" [ngClass]="{
+                        'bg-red-500': document.file_type === 'pdf',
+                        'bg-blue-600': document.file_type === 'docx',
+                        'bg-green-600': document.file_type === 'txt'
+                    }">
+                    <i class="text-2xl" [ngClass]="getDocumentIconClassFromFileType(document.file_type)"></i>
+                    <h4 class="font-semibold">{{ document.file_type.toUpperCase() }}</h4>
+                </div>
+
+                <div class="p-4 flex-grow text-gray-800">
+                    <h5 class="font-semibold mb-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ document.filename
+                        }}</h5>
+                    <div class="flex justify-between text-gray-600 text-sm">
+                        <span *ngIf="document?.size">{{ formatBytesToMB(document.size) }}</span>
+                        <span>{{ adjustToUTCMinus5(document.created_at) | date:'short' }}</span>
+                    </div>
+                </div>
+
+                <div class="py-2.5 px-4 flex justify-end gap-2.5 border-t border-gray-200">
+                    <button
+                        class="bg-transparent border-none text-gray-600 cursor-pointer text-base transition-colors duration-300 hover:text-blue-500"
+                        (click)="viewDocument(document)"
+                        [title]="viewedDocuments.has(document.id) ? 'Documento visto' : 'Ver documento'">
+                        <i class="fas fa-eye" [ngClass]="viewedDocuments.has(document.id) ? 'text-green-500' : ''"></i>
+                    </button>
+                    <button
+                        class="bg-transparent border-none text-gray-600 cursor-pointer text-base transition-colors duration-300 hover:text-blue-500"
+                        (click)="downloadDocument(document)">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button
+                        class="bg-transparent border-none text-gray-600 cursor-pointer text-base transition-colors duration-300 hover:text-blue-500"
+                        (click)="deleteDocument(document)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel "No hay documentos" -->
+        <ng-template #noDocuments>
+            <div
+                class="p-12 border border-gray-200 rounded-xl text-center mt-10 flex flex-col items-center justify-center">
+                <div class="text-center">
+                    <lucide-angular name="Inbox" class="w-12 h-12 text-gray-400 mx-auto mb-2"></lucide-angular>
+                    <p class="text-gray-500 font-medium">No hay documentos disponibles</p>
+                    <p class="text-sm text-gray-400 mt-1">
+                        {{ activeFilter === 'all'
+                        ? 'No hay documentos para mostrar'
+                        : 'No hay documentos de tipo ' + activeFilter.toUpperCase()
+                        }}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Paginación -->
+        <div class="mt-10 flex justify-center">
+            <nav class="flex flex-wrap items-center gap-2">
+                <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0"
+                    class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50">
+                    Anterior
+                </button>
+                <button *ngFor="let page of getPages()" (click)="onPageChange(page)" [ngClass]="{
+                        'bg-[#02ab74] text-white': currentPage === page - 1,
+                        'bg-white text-gray-800': currentPage !== page - 1
+                    }"
+                    class="px-4 py-2 border border-gray-300 rounded-lg transition-all duration-200 hover:bg-gray-100">
+                    {{ page }}
+                </button>
+                <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
+                    class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50">
+                    Siguiente
+                </button>
+            </nav>
+        </div>
+
+        <!-- Sección de Asistente IA -->
+        <div class="mt-8 rounded-lg p-6 text-white flex items-center gap-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+            style="background: linear-gradient(to bottom right, #028a5e, #5a058f);">
+
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center text-4xl text-blue-500">
+                <lucide-angular class="w-12 h-12 text-green-500" name="bot"></lucide-angular>
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-xl font-semibold mb-2">¿Necesitas ayuda?</h3>
+                <p class="text-base">Pregúntame sobre tus documentos usando tu voz o el teclado</p>
+            </div>
+
+            <div class="flex gap-3">
+                <!-- Botón de Voz -->
+                <button (click)="openAtheniaVoice()"
+                    class="bg-white text-blue-500 w-12 h-12 rounded-full flex items-center justify-center text-xl cursor-pointer transition-all duration-300 border-none hover:scale-110"
+                    title="Hablar con ATHENIA">
+                    <i class="fas fa-microphone"></i>
+                </button>
+
+                <!-- Botón de Texto -->
+                <button (click)="openAtheniaText()"
+                    class="bg-white text-blue-500 w-12 h-12 rounded-full flex items-center justify-center text-xl cursor-pointer transition-all duration-300 border-none hover:scale-110"
+                    title="Escribir a ATHENIA">
+                    <i class="fas fa-keyboard"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Componentes -->
+        <app-athenia-chat></app-athenia-chat>
+        <app-athenia-voice></app-athenia-voice>
+    </section>
+</div>

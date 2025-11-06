@@ -1,0 +1,319 @@
+<div class="space-y-8">
+    <!-- Header -->
+    <div>
+        <h1 class="text-[#070025] mb-2 text-2xl font-bold">Gestión de Usuarios</h1>
+        <p class="text-gray-600 mb-6">Administra usuarios, roles, permisos y accesos del sistema</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 border border-gray-200 rounded-xl flex items-center justify-between" *ngFor="let stat of stats">
+            <div>
+                <p class="text-sm text-gray-600 mb-1">{{ stat.label }}</p>
+                <p class="text-[#070025]">{{ stat.value }}</p>
+            </div>
+            <div [ngClass]="stat.color" class="p-3 rounded-lg">
+                <lucide-angular [name]="stat.icon" class="text-white w-6 h-6"></lucide-angular>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="p-6 border border-gray-200 rounded-xl">
+        <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
+                <lucide-angular name="search"
+                    class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
+                <input type="text" placeholder="Buscar por nombre o email..." [(ngModel)]="searchQuery"
+                    class="pl-10 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-[#02ab74] w-full" />
+            </div>
+
+            <div class="flex gap-3">
+                <select [(ngModel)]="roleFilter" class="w-40 rounded-lg border-gray-200">
+                    <option value="all">Todos los roles</option>
+                    <option value="admin">Administrador</option>
+                    <option value="editor">Editor</option>
+                    <option value="user">Usuario</option>
+                </select>
+
+                <select [(ngModel)]="statusFilter" class="w-40 rounded-lg border-gray-200">
+                    <option value="all">Todos</option>
+                    <option value="active">Activos</option>
+                    <option value="inactive">Inactivos</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="p-12 text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
+        <p class="text-gray-600 mt-4">Cargando usuarios...</p>
+    </div>
+
+    <!-- Users Table -->
+    <div *ngIf="!isLoading" class="border border-gray-200 rounded-xl overflow-hidden">
+        <div class="p-6 border-b border-gray-200 bg-gray-50 flex items-center space-x-3">
+            <div class="p-2 bg-[#02ab74] rounded-lg">
+                <lucide-angular name="users" class="w-6 h-6 text-white"></lucide-angular>
+            </div>
+            <h2 class="text-[#070025]">Lista de Usuarios</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">Usuario</th>
+                        <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">Rol</th>
+                        <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">Documentos</th>
+                        <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">Última Actividad
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
+                                    [userPhotoUrl]="user.profile_photo_url">
+                                </app-profile-avatar>
+                                <div>
+                                    <p class="text-[#070025]">{{ user.name }}</p>
+                                    <p class="text-sm text-gray-600">{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="relative w-36">
+                                <!-- Select con estilos según el rol -->
+                                <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
+                                    [ngClass]="getRoleBadgeClasses(user.role)"
+                                    class="appearance-none w-full pr-10 py-2 pl-3 text-sm font-medium focus:outline-none focus:ring-2 border rounded-lg transition">
+                                    <option [ngValue]="UserRole.ADMIN">Administrador</option>
+                                    <option [ngValue]="UserRole.USER">Usuario</option>
+                                </select>
+
+                                <!-- Icono personalizado del dropdown -->
+                                <lucide-angular name="ChevronDown"
+                                    class="w-4 h-4 absolute top-1/2 right-2 -translate-y-1/4 pointer-events-none">
+                                </lucide-angular>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-sm rounded-full" [ngClass]="{
+                                'bg-green-100 text-green-700': user.is_active,
+                                'bg-gray-100 text-gray-700': !user.is_active
+                            }">
+                                {{ user.is_active ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <button (click)="handleViewDocuments(user)"
+                                class="flex items-center gap-2 text-[#02ab74] hover:text-[#028a5f] transition-colors">
+                                <lucide-angular name="FileText" class="w-4 h-4"></lucide-angular>
+                                <span>{{ user.documentsCount }} documentos</span>
+                            </button>
+                        </td>
+
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ user.lastActivity }}</td>
+
+                        <td class="px-6 py-4 text-right flex items-center justify-center">
+                            <div class="relative inline-block text-left" (clickOutside)="closeMenu()">
+                                <!-- Botón con ícono centrado -->
+                                <button (click)="toggleMenu(user.id)"
+                                    class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
+                                    aria-haspopup="true" aria-expanded="true">
+                                    <lucide-angular name="MoreVertical" class="w-5 h-5 text-gray-600"></lucide-angular>
+                                </button>
+
+                                <!-- Contenido del menú -->
+                                <div *ngIf="openMenuId === user.id"
+                                    class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg">
+                                    <div class="py-1 text-sm">
+                                        <!-- Ver documentos -->
+                                        <button (click)="handleViewDocuments(user); closeMenu()"
+                                            class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
+                                            <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
+                                            Ver Documentos
+                                        </button>
+
+                                        <!-- Activar / Desactivar -->
+                                        <button (click)="handleToggleStatus(user.id); closeMenu()"
+                                            class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
+                                            <lucide-angular [name]="user.is_active ? 'UserX' : 'UserCheck'"
+                                                class="w-4 h-4"></lucide-angular>
+                                            {{ user.is_active ? 'Desactivar' : 'Activar' }}
+                                        </button>
+
+                                        <!-- Separador -->
+                                        <div class="border-t my-1"></div>
+
+                                        <!-- Eliminar usuario -->
+                                        <button (click)="openDeleteDialog(user); closeMenu()"
+                                            class="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-red-600">
+                                            <lucide-angular name="Trash2" class="w-4 h-4"></lucide-angular>
+                                            Eliminar Usuario
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="filteredUsers.length === 0 && !isLoading" class="p-12 text-center">
+            <lucide-angular name="users" class="w-12 h-12 text-gray-400 mx-auto mb-4"></lucide-angular>
+            <h3 class="text-[#070025] mb-2">No se encontraron usuarios</h3>
+            <p class="text-gray-600">Intenta con otros términos de búsqueda o filtros</p>
+        </div>
+    </div>
+
+    <!-- Documents Dialog -->
+    <div *ngIf="showDocumentsDialog" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="documents-modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center px-4 text-center sm:block sm:p-0">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                (click)="showDocumentsDialog = false"></div>
+
+            <!-- Trick to center modal contents on small screens -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal content -->
+            <div class="inline-block align-middle bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:max-w-xl w-full max-h-[80vh] overflow-y-auto"
+                role="dialog" aria-modal="true" aria-labelledby="documents-modal-title">
+                <!-- Header -->
+                <div class="px-6 pt-5 pb-4">
+                    <h3 class="text-lg font-medium leading-6 text-[#070025]" id="documents-modal-title">
+                        Documentos de {{ selectedUser?.name }}
+                    </h3>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Lista de documentos subidos por este usuario
+                    </p>
+                </div>
+
+                <!-- Body -->
+                <div class="px-6 py-4 space-y-3">
+                    <ng-container *ngIf="selectedUser && selectedUser.documents.length > 0">
+                        <div class="p-4 border border-gray-200 rounded-lg" *ngFor="let doc of selectedUser.documents">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="p-2 rounded-md"
+                                        style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+                                        <lucide-angular name="FileText" class="w-5 h-5 text-white"></lucide-angular>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-[#070025] mb-2 truncate">{{ doc.filename }}</h4>
+                                        <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+                                            <span class="flex items-center gap-1">
+                                                <span
+                                                    class="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">{{
+                                                    doc.file_type }}</span>
+                                            </span>
+                                            <span class="flex items-center gap-1">
+                                                <lucide-angular name="Calendar" class="w-4 h-4"></lucide-angular>
+                                                {{ doc.upload_date | date: "d MMM y" }}
+                                            </span>
+                                            <span>{{ formatFileSize(doc.size) }}</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <button class="action-btn" (click)="viewDocument(doc)"
+                                    [title]="viewedDocuments.has(doc.id) ? 'Documento visto' : 'Ver documento'"
+                                    class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-1 text-sm">
+                                    <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
+                                    Ver
+                                </button>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div *ngIf="selectedUser && selectedUser.documents.length === 0" class="text-center py-8">
+                        <lucide-angular name="FileText" class="w-12 h-12 text-gray-300 mx-auto mb-3"></lucide-angular>
+                        <p class="text-gray-600">Este usuario no ha subido documentos</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-gray-50 px-6 py-3 flex flex-row-reverse">
+                    <button (click)="showDocumentsDialog = false"
+                        class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#02ab74] text-base font-medium text-white hover:bg-[#028a5f] sm:text-sm">
+                        Cerrar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Delete Confirmation Dialog -->
+    <div *ngIf="showDeleteDialog" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="delete-modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                (click)="showDeleteDialog = false"></div>
+
+            <!-- Content -->
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <!-- Header -->
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+
+                        <div class="mt-3 text-center sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-[#070025]" id="delete-modal-title">
+                                Confirmar Eliminación
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-600">
+                                    ¿Estás seguro que deseas eliminar a <span class="font-medium">{{ userToDelete?.name
+                                        }}</span> de la base de datos?
+                                    Esta acción no se puede deshacer.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div *ngIf="userToDelete" class="bg-red-50 border border-red-200 rounded-lg p-4 mx-4">
+                    <div class="flex items-start gap-3">
+                        <lucide-angular name="Trash2" class="w-5 h-5 text-red-600 mt-0.5"></lucide-angular>
+                        <div class="flex-1">
+                            <p class="text-sm text-red-800 mb-2">
+                                Se eliminarán permanentemente:
+                            </p>
+                            <ul class="text-sm text-red-700 space-y-1 list-disc list-inside">
+                                <li>Perfil del usuario</li>
+                                <li>{{ userToDelete.documentsCount }} documentos asociados</li>
+                                <li>Historial de actividad</li>
+                                <li>Configuraciones y preferencias</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button (click)="handleDeleteUser()" type="button"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm">
+                        Eliminar Usuario
+                    </button>
+                    <button (click)="showDeleteDialog = false" type="button"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,140 @@
+<input #documentFileInput type="file" class="hidden"
+    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.zip,.rar"
+    (change)="onFileSelected($event, 'document')" [disabled]="isLoading" />
+
+<input #guideFileInput type="file" class="hidden" accept=".pdf,.doc,.docx,.txt"
+    (change)="onFileSelected($event, 'guide')" [disabled]="isLoading" />
+
+<!-- MAIN CARD -->
+<div class="p-4 rounded-lg border-2 transition-colors mb-3"
+    [ngClass]="isCompleted ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'">
+
+    <div class="flex items-start justify-between gap-4">
+
+        <!-- Left: Icon + Content -->
+        <div class="flex items-start gap-3 flex-1 min-w-0">
+
+            <!-- Status Icon -->
+            <div class="mt-1 p-2 rounded-lg flex-shrink-0" [ngClass]="isCompleted ? 'bg-green-100' : 'bg-orange-100'">
+                <lucide-angular [name]="isCompleted ? 'Check' : 'Clock'" class="w-4 h-4"
+                    [ngClass]="isCompleted ? 'text-green-700' : 'text-orange-700'">
+                </lucide-angular>
+            </div>
+
+            <!-- Document Info -->
+            <div class="flex-1 min-w-0">
+                <!-- Title & Badge -->
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                    <h4 class="font-medium text-[#070025] truncate">
+                        {{ documentName }}
+                    </h4>
+                    <span class="px-2 py-1 rounded-md text-xs font-medium flex-shrink-0"
+                        [ngClass]="isCompleted ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'">
+                        {{ isCompleted ? 'Completado' : 'Pendiente' }}
+                    </span>
+                </div>
+
+                <!-- Completed Document Details -->
+                <div *ngIf="isCompleted" class="space-y-1">
+                    <p class="text-sm text-gray-600 flex items-center gap-2">
+                        <lucide-angular name="FileText" class="w-4 h-4 flex-shrink-0"></lucide-angular>
+                        <span class="truncate">
+                            {{ documentFileName ? getDocumentType(documentFileName) : 'Archivo' }}
+                        </span>
+                        <span class="text-gray-500" *ngIf="documentFileName">•</span>
+                        <span class="text-gray-600 truncate" *ngIf="documentFileName">
+                            {{ documentFileName }}
+                        </span>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        <span class="text-gray-500">Subido por:</span>
+                        {{ documentUploadedBy }} • {{ formattedDate }}
+                    </p>
+                </div>
+
+                <!-- Pending State Message -->
+                <p *ngIf="isPending" class="text-sm text-orange-600 flex items-center gap-2">
+                    <lucide-angular name="AlertCircle" class="w-4 h-4"></lucide-angular>
+                    Esperando archivo...
+                </p>
+
+                <!-- Guide Info -->
+                <div *ngIf="hasGuide" class="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                    <p class="text-xs font-medium text-blue-900 flex items-center gap-2">
+                        <lucide-angular name="BookOpen" class="w-3 h-3"></lucide-angular>
+                        Guía disponible: {{ guideFileName }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Action Buttons -->
+        <div class="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+
+            <!-- Upload Document Button (Pending only) -->
+            <ng-container *ngIf="isPending">
+                <button (click)="onUploadDocumentClick()" [disabled]="isLoading"
+                    class="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#02ab74] hover:bg-[#02ab74]/90 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    [attr.aria-label]="'Subir archivo para ' + documentName" type="button">
+                    <lucide-angular name="Upload" class="w-4 h-4" [class.animate-pulse]="isLoading">
+                    </lucide-angular>
+                    {{ isLoading ? 'Subiendo...' : 'Subir' }}
+                </button>
+            </ng-container>
+
+            <!-- Download Document Button (Completed only) -->
+            <button *ngIf="isCompleted" (click)="onDownloadClick('document')" [disabled]="isLoading" type="button"
+                class="flex items-center gap-2 px-3 py-1.5 text-sm border border-green-300 text-green-700 hover:bg-green-100 rounded-md transition-colors disabled:opacity-50"
+                [attr.aria-label]="'Descargar ' + documentFileName">
+                <lucide-angular name="Download" class="w-4 h-4"></lucide-angular>
+                Descargar
+            </button>
+
+            <!-- Guide Management Button -->
+            <div class="relative">
+                <button type="button" (click)="toggleGuideOptions()" [disabled]="isLoading"
+                    class="flex items-center gap-2 px-3 py-1.5 text-sm border border-blue-300 text-blue-700 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-50"
+                    [attr.aria-label]="'Gestionar guía de ' + documentName">
+                    <lucide-angular name="BookOpen" class="w-4 h-4"></lucide-angular>
+                    Guía
+                    <lucide-angular [name]="showGuideOptions ? 'ChevronUp' : 'ChevronDown'"
+                        class="w-3 h-3"></lucide-angular>
+                </button>
+
+                <!-- Guide Options Dropdown -->
+                <div *ngIf="showGuideOptions"
+                    class="absolute right-0 top-full mt-1 bg-white border rounded-lg shadow-lg z-10 min-w-max animate-slide-down">
+
+                    <!-- Upload Guide -->
+                    <button type="button" (click)="onUploadGuideClick()" [disabled]="isLoading"
+                        class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors first:rounded-t-lg flex items-center gap-2 text-blue-700">
+                        <lucide-angular name="Upload" class="w-4 h-4"></lucide-angular>
+                        {{ hasGuide ? 'Actualizar guía' : 'Subir guía' }}
+                    </button>
+
+                    <!-- Download Guide -->
+                    <button *ngIf="hasGuide" type="button" (click)="onDownloadGuideClick()" [disabled]="isLoading"
+                        class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors flex items-center gap-2 text-blue-700">
+                        <lucide-angular name="Download" class="w-4 h-4"></lucide-angular>
+                        Descargar guía
+                    </button>
+
+                    <!-- Delete Guide -->
+                    <button *ngIf="hasGuide" type="button" (click)="onDeleteGuideClick(); closeGuideOptions()"
+                        [disabled]="isLoading"
+                        class="block w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition-colors last:rounded-b-lg flex items-center gap-2 text-red-700">
+                        <lucide-angular name="Trash2" class="w-4 h-4"></lucide-angular>
+                        Eliminar guía
+                    </button>
+                </div>
+            </div>
+
+            <!-- Delete Document Button -->
+            <button (click)="onDeleteClick()" [disabled]="isLoading" type="button"
+                class="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+                [attr.aria-label]="'Eliminar documento ' + documentName">
+                <lucide-angular name="Trash2" class="w-4 h-4"></lucide-angular>
+            </button>
+        </div>
+    </div>
+</div>

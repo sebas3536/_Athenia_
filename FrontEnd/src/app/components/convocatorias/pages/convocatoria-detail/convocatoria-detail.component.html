@@ -1,0 +1,126 @@
+<div *ngIf="isLoading && !convocatoria" class="flex items-center justify-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
+</div>
+
+<!-- Main Content -->
+<div *ngIf="convocatoria" class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+            <button (click)="backToList()"
+                class="mb-2 -ml-2 px-2 py-1 text-gray-600 hover:text-[#02ab74] transition-colors flex items-center gap-1">
+                <lucide-angular name="ChevronLeft" class="w-4 h-4"></lucide-angular>
+                Volver a convocatorias
+            </button>
+            <h1 class="text-3xl font-bold text-[#070025] mb-2">{{ convocatoria.name }}</h1>
+            <p class="text-gray-600">{{ convocatoria.description }}</p>
+            <div *ngIf="!canEditConvocatoria" class="mt-3 flex items-center gap-2">
+                <lucide-angular name="Users" class="w-4 h-4 text-[#02ab74]"></lucide-angular>
+                <span class="text-sm text-gray-600">Colaborador</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons (Solo visible para admins) -->
+        <div *ngIf="canEditConvocatoria" class="flex gap-2">
+            <!-- Edit Dates Button -->
+            <button (click)="openEditDatesDialog()" [disabled]="isLoading"
+                class="flex items-center gap-2 px-4 py-2 border border-[#02ab74] text-[#02ab74] hover:bg-[#02ab74]/10 rounded-lg transition-colors text-sm">
+                <lucide-angular name="Edit2" class="w-4 h-4"></lucide-angular>
+                Editar Fechas
+            </button>
+
+            <!-- Add Document Button -->
+            <button (click)="openAddDocumentDialog()" [disabled]="isLoading"
+                class="flex items-center gap-2 px-4 py-2 bg-[#02ab74] hover:bg-[#02ab74]/90 text-white rounded-lg transition-colors disabled:opacity-50">
+                <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+                Agregar Documento
+            </button>
+        </div>
+    </div>
+
+    <!-- Progress Card con botón de editar fechas -->
+    <div class="space-y-3">
+        <app-progress-card [convocatoria]="convocatoria" [progress]="progressUtils.calculateProgress(convocatoria)"
+            [isCompleted]="progressUtils.isConvocatoriaComplete(convocatoria)">
+        </app-progress-card>
+    </div>
+
+    <!-- Documents Checklist -->
+    <div class="p-6 bg-white rounded-lg border mb-3">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-[#070025] flex items-center">
+                <lucide-angular name="FileText" class="w-5 h-5 mr-2 text-[#02ab74]"></lucide-angular>
+                Checklist de Documentos
+            </h3>
+            <button *ngIf="canCreateChecklistItems" (click)="openAddDocumentDialog()"
+                class="flex items-center gap-1 px-3 py-1 text-sm border border-[#02ab74] text-[#02ab74] hover:bg-[#02ab74]/10 rounded transition-colors">
+                <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+                Agregar Item
+            </button>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="convocatoria.documents.length === 0" class="text-center py-12 border-2 border-dashed rounded-lg">
+            <lucide-angular name="AlertCircle" class="w-12 h-12 mx-auto mb-3 text-gray-400"></lucide-angular>
+            <p class="text-gray-600 mb-4">No hay documentos en el checklist</p>
+
+            <button *ngIf="canCreateChecklistItems" (click)="openAddDocumentDialog()"
+                class="flex items-center gap-2 px-4 py-2 border border-[#02ab74] text-[#02ab74] hover:bg-[#02ab74]/10 rounded-lg transition-colors mx-auto">
+                <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+                Agregar Primer Documento
+            </button>
+        </div>
+
+        <!-- Document Items CON CONVOCATORIA ID -->
+        <div *ngIf="convocatoria.documents.length > 0" class="space-y-3">
+            <app-document-item *ngFor="let doc of convocatoria.documents; trackBy: trackByDocumentId" [document]="doc"
+                [convocatoriaId]="convocatoriaId" [isLoading]="isLoading" [canDeleteDocument]="canDeleteChecklistItems"
+                [canUploadDocument]="canUploadDocuments" [canDeleteGuide]="canDeleteChecklistItems"
+                (uploadFile)="onUploadFile($event)" (downloadFile)="onDownloadFile($event)"
+                (uploadGuide)="onUploadFile($event)" (downloadGuide)="onDownloadFile($event)"
+                (deleteDocument)="onDeleteDocument($event)" (deleteGuide)="onDeleteGuide($event)">
+            </app-document-item>
+        </div>
+    </div>
+
+    <!-- Collaborators Section (Solo para admins) -->
+    <app-collaborators-section [collaborators]="collaborators" [isAdmin]="isAdmin()"
+        (addCollaborator)="openAddCollaboratorDialog()"
+        (removeCollaborator)="onRemoveCollaborator($event)"></app-collaborators-section>
+
+    <!-- Info para colaboradores sin permiso de agregar -->
+    <div *ngIf="!canAddCollaborators && convocatoria.collaborators.length > 0"
+        class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="flex items-start gap-3">
+            <lucide-angular name="Info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></lucide-angular>
+            <div class="text-sm text-blue-800">
+                <strong>Colaboradores Asignados:</strong>
+                <p class="text-xs mt-1">
+                    {{ convocatoria.collaborators.length }}
+                    {{ convocatoria.collaborators.length === 1 ? 'colaborador' : 'colaboradores' }}
+                    están trabajando en esta convocatoria
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- History Table -->
+    <app-history-table [history]="history"></app-history-table>
+</div>
+
+<!-- Add Document Dialog (Solo para admins) -->
+<app-add-document-dialog *ngIf="canCreateChecklistItems" [(open)]="isAddDocumentDialogOpen" [isLoading]="isLoading"
+    (addDocument)="onAddDocument($event)">
+</app-add-document-dialog>
+
+<!-- Add Collaborator Dialog (Solo para admins) -->
+
+<app-add-collaborator-dialog *ngIf="canAddCollaborators" [(open)]="isAddCollaboratorDialogOpen" [isLoading]="isLoading"
+    [availableUsers]="usersNotInCollaborators" (addCollaborators)="onAddCollaborators($event)">
+</app-add-collaborator-dialog>
+
+
+<!-- Edit Dates Dialog (Solo para admins) -->
+<app-edit-dates-dialog *ngIf="canEditConvocatoria" [(open)]="isEditDatesDialogOpen" [isLoading]="isLoading"
+    [convocatoria]="convocatoria" (updateDates)="onUpdateDates($event)">
+</app-edit-dates-dialog>

@@ -1,0 +1,61 @@
+<div class="flex items-center gap-6">
+  <div
+    class="rounded-full flex items-center justify-center text-white text-sm font-semibold smooth-transition"
+    [style.width.rem]="size"
+    [style.height.rem]="size"
+    style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+    
+    <!-- Iniciales si no hay foto -->
+    <span 
+      *ngIf="!profilePhotoUrl && !photoPreview" 
+      class="text-white font-semibold" 
+      [style.font-size.rem]="size / 2.5">
+      {{ getUserInitials() }}
+    </span>
+
+    <!-- Foto si disponible -->
+    <img 
+      *ngIf="profilePhotoUrl || photoPreview" 
+      [src]="profilePhoto" 
+      alt="Foto de perfil" 
+      class="w-full h-full object-cover rounded-full">
+  </div>
+
+  <!-- Controles de edición solo si showEditControls -->
+  <div *ngIf="showEditControls" class="flex-1 flex gap-2">
+    <input 
+      type="file" 
+      [id]="'photoInput-' + size" 
+      accept="image/*" 
+      (change)="onFileSelected($event)" 
+      class="hidden">
+    
+    <button 
+      (click)="document.getElementById('photoInput-' + size)?.click()" 
+      class="border border-gray-500 p-2 rounded hover:bg-gray-100">
+      Cambiar Foto
+    </button>
+    
+    <button 
+      *ngIf="selectedFile" 
+      (click)="uploadPhoto()" 
+      [disabled]="uploadingPhoto" 
+      class="border border-gray-500 p-2 rounded hover:bg-gray-100">
+      {{ uploadingPhoto ? 'Subiendo...' : 'Subir Foto' }}
+    </button>
+    
+    <button 
+      *ngIf="selectedFile" 
+      (click)="cancelPhotoSelection()" 
+      class="border border-gray-500 p-2 rounded hover:bg-gray-100">
+      Cancelar
+    </button>
+    
+    <button 
+      *ngIf="profilePhotoUrl && !selectedFile" 
+      (click)="deletePhoto()" 
+      class="border border-gray-500 p-2 rounded hover:bg-red-100 text-red-600">
+      Eliminar Foto
+    </button>
+  </div>
+</div>

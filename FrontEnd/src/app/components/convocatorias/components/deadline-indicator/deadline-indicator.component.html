@@ -1,0 +1,24 @@
+<div *ngIf="convocatoria?.startDate || convocatoria?.endDate" class="flex items-center gap-4 mt-2 text-xs">
+    <!-- Fecha de inicio -->
+    <div *ngIf="convocatoria?.startDate" class="flex items-center gap-1 text-gray-500">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Inicio: {{ formatDateOnly(convocatoria.startDate) }}
+    </div>
+
+    <!-- Fecha de cierre (deadline) con color dinámico -->
+    <div *ngIf="convocatoria?.endDate" class="flex items-center gap-1 font-medium" [ngClass]="{
+        'text-green-700': getDeadlineStatus(convocatoria.endDate) === 'safe',
+        'text-yellow-700': getDeadlineStatus(convocatoria.endDate) === 'warning',
+        'text-orange-700': getDeadlineStatus(convocatoria.endDate) === 'critical',
+        'text-red-700': getDeadlineStatus(convocatoria.endDate) === 'overdue'
+    }">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ getDeadlineText(convocatoria.endDate) }}
+    </div>
+</div>

@@ -1,0 +1,71 @@
+<div class="min-h-screen bg-gradient-to-b from-white to-gray-50 flex flex-col">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <button routerLink="/" class="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                    aria-label="Ir al inicio">
+                    <div class="p-2 bg-[#02ab74] rounded-lg">
+                        <lucide-angular class="w-6 h-6 text-white" name="bot"></lucide-angular>
+                    </div>
+                    <span class="text-xl text-[#070025]">Asistente Virtual IA</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-md">
+            <section class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div class="flex justify-center mb-6">
+                    <div class="relative">
+                        <div class="p-4 rounded-2xl shadow-md"
+                            style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+                            <lucide-angular name="mail" class="w-12 h-12 text-white"></lucide-angular>
+                            <div class="absolute -bottom-2 -right-2 bg-[#02ab74] rounded-full p-2">
+                                <lucide-angular name="checkCircle" class="w-6 h-6 text-white"></lucide-angular>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="text-center text-[#070025] font-semibold text-lg mb-2">
+                    ¡Revisa tu correo!
+                </h1>
+                <p class="text-center text-gray-600 mb-8 text-sm">
+                    Te hemos enviado un enlace para restablecer tu contraseña.
+                </p>
+
+                <div class="rounded-xl p-6 mb-6 border border-gray-100"
+                    style="background: linear-gradient(to right, rgba(2,171,116,0.1), rgba(114,9,183,0.1));">
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3"
+                            *ngFor="let step of ['Abre tu bandeja de entrada','Busca el correo de Asistente Virtual IA','Haz clic en el enlace para restablecer tu contraseña']; let i = index">
+                            <div
+                                class="w-6 h-6 rounded-full bg-[#02ab74] flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <span class="text-white text-sm">{{ i + 1 }}</span>
+                            </div>
+                            <p class="text-gray-700 text-sm">{{ step }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-center text-gray-800 text-sm mt-4">
+                    ¿No recibiste el correo?
+                    <button (click)="resendEmail()" [disabled]="!canResend || isLoading"
+                        class="text-[#02ab74] hover:text-[#028a5f] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-live="polite">
+                        <span *ngIf="canResend">Reenviar correo</span>
+                        <span *ngIf="!canResend">Reenviar en {{ resendCountdown }}s</span>
+                    </button>
+                </p>
+
+                <p class="text-center mt-6 text-gray-600 text-sm">
+                    <button (click)="goToLogin()"
+                        class="text-[#02ab74] hover:text-[#028a5f] transition-colors font-medium">
+                        Volver al inicio de sesión
+                    </button>
+                </p>
+            </section>
+        </div>
+    </main>
+</div>

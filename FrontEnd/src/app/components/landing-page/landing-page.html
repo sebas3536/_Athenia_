@@ -1,0 +1,379 @@
+<header class="landing-header">
+    <div class="logo">
+        <lucide-angular class="w-9 h-9" name="bot"></lucide-angular>
+        <h1>ATHENIA</h1>
+    </div>
+    <nav class="nav-links">
+        <a href="#features-section">Características</a>
+        <a href="#for-who-section">¿Para Quién?</a>
+        <a href="#how-it-works-section">Cómo Funciona</a>
+        <a href="#testimonials-section">Testimonios</a>
+        <a href="#pricing-section">Precios</a>
+        <button (click)="goToLogin()" class="btn-primary">Iniciar Sesión</button>
+    </nav>
+</header>
+
+<main role="main">
+    <section class="hero-section" aria-labelledby="hero-heading">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="assets/videos/012.mp4" type="video/mp4" />
+            Tu navegador no soporta video.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content animate-fade-in">
+            <h2 id="hero-heading">
+                Tu gestión de documentos,<br>
+                <span class="highlight">revolucionada por la IA</span>
+            </h2>
+            <p class="hero-description">
+                Carga tus archivos, haz preguntas, y deja que nuestra inteligencia artificial
+                encuentre las respuestas y resuma la información por ti.
+            </p>
+            <div class="cta-buttons">
+                <a href="#features-section" class="btn btn-primary">
+                    Empezar Ahora
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+                <a href="#how-it-works-section" class="btn btn-secondary">
+                    Ver Demo
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat animate-count">
+                    <span class="stat-number">10K+</span>
+                    <span class="stat-label">Usuarios Activos</span>
+                </div>
+                <div class="stat animate-count">
+                    <span class="stat-number">1M+</span>
+                    <span class="stat-label">Documentos Procesados</span>
+                </div>
+                <div class="stat animate-count">
+                    <span class="stat-number">99.9%</span>
+                    <span class="stat-label">Precisión</span>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </section>
+</main>
+
+<!-- Sección de Valor Agregado -->
+<section class="value-section">
+    <div class="section-container">
+        <div class="value-grid">
+            <div class="value-card animate-slide-in">
+                <div class="value-icon">⚡</div>
+                <h3>10x Más Rápido</h3>
+                <p>Encuentra información en segundos, no en horas</p>
+            </div>
+            <div class="value-card animate-slide-in">
+                <!--<lucide-angular class="w-9 h-9 text-green" name="DollarSign"></lucide-angular> -->
+                <div class="value-icon">💰</div>
+                <h3>Ahorra Tiempo y Dinero</h3>
+                <p>Reduce costos operativos hasta en un 70%</p>
+            </div>
+            <div class="value-card animate-slide-in">
+                <div class="value-icon">🎯</div>
+                <h3>100% Preciso</h3>
+                <p>Respuestas verificadas y contextualizadas</p>
+            </div>
+            <div class="value-card animate-slide-in">
+                <div class="value-icon">🔒</div>
+                <h3>Totalmente Seguro</h3>
+                <p>Cifrado de grado empresarial</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features-section" class="features-section">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-badge">Características</span>
+            <h2 class="section-title">Potencia tu Productividad</h2>
+            <p class="section-description">
+                Descubre cómo ATHENIA te ayuda a trabajar de manera más inteligente y rápida.
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card animate-on-scroll" *ngFor="let feature of features">
+                <div class="feature-icon">
+                    <i [class]="feature.icon"></i>
+                </div>
+                <h3 class="feature-title">{{ feature.title }}</h3>
+                <p class="feature-description">{{ feature.description }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nueva Sección: Para Quién Es -->
+<section id="for-who-section" class="for-who-section">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-badge">¿Para Quién?</span>
+            <h2 class="section-title">Ideal para Profesionales que Valoran su Tiempo</h2>
+            <p class="section-description">
+                ATHENIA está diseñado para personas y equipos que manejan grandes volúmenes de información
+            </p>
+        </div>
+        <div class="personas-grid">
+            <div class="persona-card animate-on-scroll" *ngFor="let persona of personas">
+                <div class="persona-icon">
+                    <lucide-icon [name]="persona.icon.toLowerCase()" class="w-9 h-9 text-green"></lucide-icon>
+                </div>
+
+                <h3 class="persona-title">{{ persona.title }}</h3>
+                <p class="persona-description">{{ persona.description }}</p>
+                <ul class="persona-benefits">
+                    <li *ngFor="let benefit of persona.benefits">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        {{ benefit }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nueva Sección: Cómo Funciona -->
+<section id="how-it-works-section" class="how-it-works-section">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-badge">Cómo Funciona</span>
+            <h2 class="section-title">Tan Simple Como 1, 2, 3</h2>
+            <p class="section-description">
+                Comienza a usar ATHENIA en menos de 5 minutos
+            </p>
+        </div>
+        <div class="steps-container">
+            <div class="step-card animate-on-scroll" *ngFor="let step of steps; let i = index">
+                <div class="step-number">{{ i + 1 }}</div>
+                <div class="step-content">
+                    <h3 class="step-title">{{ step.title }}</h3>
+                    <p class="step-description">{{ step.description }}</p>
+                </div>
+                <div class="step-visual">
+                    <lucide-icon [name]="step.icon.toLowerCase()" class="w-15 h-15 text-green"></lucide-icon>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección CTA Intermedia -->
+<section class="cta-banner">
+    <div class="section-container">
+        <div class="cta-banner-content animate-on-scroll">
+            <h2>¿Listo para transformar tu forma de trabajar?</h2>
+            <p>Únete a más de 10,000 profesionales que ya confían en ATHENIA</p>
+            <div class="cta-buttons">
+                <button (click)="goToLogin()" class="btn btn-primary btn-large">
+                    Prueba Gratis por 14 Días
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+                <a href="#pricing-section" class="btn btn-outline">
+                    Ver Planes y Precios
+                </a>
+            </div>
+            <p class="cta-note">✓ No requiere tarjeta de crédito · ✓ Cancela cuando quieras</p>
+        </div>
+    </div>
+</section>
+
+<section id="testimonials-section" class="testimonials-section">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-badge">Testimonios</span>
+            <h2 class="section-title">Lo que dicen nuestros usuarios</h2>
+            <p class="section-description">
+                Miles de profesionales ya están transformando su forma de trabajar.
+            </p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card animate-on-scroll" *ngFor="let testimonial of testimonials">
+                <div class="quote-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
+                    </svg>
+                </div>
+                <div class="testimonial-rating">
+                    <span>⭐⭐⭐⭐⭐</span>
+                </div>
+                <p class="testimonial-quote">{{ testimonial.quote }}</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">{{ testimonial.author.charAt(0) }}</div>
+                    <div class="author-info">
+                        <h4 class="author-name">{{ testimonial.author }}</h4>
+                        <p class="author-position">{{ testimonial.position }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nueva Sección: Precios -->
+<section id="pricing-section" class="pricing-section">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-badge">Precios</span>
+            <h2 class="section-title">Planes para cada necesidad</h2>
+            <p class="section-description">
+                Elige el plan perfecto para ti o tu equipo. Todos incluyen 14 días de prueba gratis.
+            </p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card animate-on-scroll" *ngFor="let plan of pricingPlans"
+                [class.featured]="plan.featured">
+                <div class="pricing-badge" *ngIf="plan.featured">Más Popular</div>
+                <h3 class="pricing-title">{{ plan.name }}</h3>
+                <div class="pricing-price">
+                    <span class="currency">$</span>
+                    <span class="amount">{{ plan.price }}</span>
+                    <span class="period">/mes</span>
+                </div>
+                <p class="pricing-description">{{ plan.description }}</p>
+                <ul class="pricing-features">
+                    <li *ngFor="let feature of plan.features">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        {{ feature }}
+                    </li>
+                </ul>
+                <button class="btn" [class.btn-primary]="plan.featured" [class.btn-outline]="!plan.featured">
+                    {{ plan.cta }}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="faq-section">
+    <div class="section-container-narrow">
+        <div class="section-header">
+            <span class="section-badge">FAQ</span>
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+            <p class="section-description">
+                Encuentra respuestas a las preguntas más comunes sobre ATHENIA
+            </p>
+        </div>
+        <app-z-accordion type="single" class="faq-accordion">
+            <app-z-accordion-item zTitle="¿Qué tipo de archivos puedo subir?">
+                <p>Actualmente, soportamos formatos como PDF, Microsoft Word (.docx), y archivos de texto plano (.txt).
+                    Estamos trabajando en agregar soporte para Excel, PowerPoint y más formatos.</p>
+            </app-z-accordion-item>
+            <app-z-accordion-item zTitle="¿Mis documentos están seguros?">
+                <p>Absolutamente. Utilizamos cifrado de extremo a extremo (AES-256), protocolos de seguridad avanzados y
+                    cumplimos con GDPR y otras regulaciones internacionales. Tus archivos nunca se comparten con
+                    terceros.</p>
+            </app-z-accordion-item>
+            <app-z-accordion-item zTitle="¿Cómo funciona el asistente por voz?">
+                <p>El asistente utiliza tecnología de reconocimiento de voz avanzada para transcribir tus preguntas.
+                    Luego, nuestra IA procesa la consulta y extrae la información relevante de tus documentos para darte
+                    una respuesta oral y escrita en tiempo real.</p>
+            </app-z-accordion-item>
+            <app-z-accordion-item zTitle="¿Qué tan precisos son los resúmenes automáticos?">
+                <p>Nuestra IA está entrenada con grandes volúmenes de texto y alcanza una precisión del 99.9% en la
+                    identificación de puntos clave. Los resúmenes son verificados por nuestros algoritmos de control de
+                    calidad.</p>
+            </app-z-accordion-item>
+            <app-z-accordion-item zTitle="¿Puedo cancelar mi suscripción en cualquier momento?">
+                <p>Sí, puedes cancelar tu suscripción en cualquier momento sin penalizaciones. Mantendrás acceso hasta
+                    el final de tu período de facturación actual.</p>
+            </app-z-accordion-item>
+            <app-z-accordion-item zTitle="¿Ofrecen soporte técnico?">
+                <p>Todos nuestros planes incluyen soporte por email. Los planes Pro y Enterprise incluyen soporte
+                    prioritario por chat en vivo y teléfono con tiempos de respuesta garantizados.</p>
+            </app-z-accordion-item>
+        </app-z-accordion>
+    </div>
+</section>
+
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <div class="logo">
+                <lucide-angular class="w-9 h-9 text-green" name="bot"></lucide-angular>
+                <span>ATHENIA</span>
+            </div>
+            <p class="footer-tagline">Revolucionando la gestión de documentos con IA</p>
+            <div class="footer-social">
+                <a href="#" aria-label="Twitter">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+                    </svg>
+                </a>
+                <a href="#" aria-label="LinkedIn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+                        <circle cx="4" cy="4" r="2" />
+                    </svg>
+                </a>
+                <a href="#" aria-label="GitHub">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h3>Producto</h3>
+                <a href="#features-section">Características</a>
+                <a href="#for-who-section">¿Para Quién?</a>
+                <a href="#how-it-works-section">Cómo Funciona</a>
+                <a href="#pricing-section">Precios</a>
+            </div>
+            <div class="footer-column">
+                <h3>Empresa</h3>
+                <a href="#contact-section">Sobre Nosotros</a>
+                <a href="#contact-section">Blog</a>
+                <a href="#contact-section">Carreras</a>
+                <a href="#contact-section">Prensa</a>
+            </div>
+            <div class="footer-column">
+                <h3>Recursos</h3>
+                <a href="#testimonials-section">Casos de Éxito</a>
+                <a href="#contact-section">Centro de Ayuda</a>
+                <a href="#contact-section">API</a>
+                <a href="#contact-section">Integraciones</a>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <a href="#contact-section">Privacidad</a>
+                <a href="#contact-section">Términos</a>
+                <a href="#contact-section">Seguridad</a>
+                <a href="#contact-section">Cookies</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 ATHENIA. Todos los derechos reservados.</p>
+        <div class="footer-badges">
+            <span class="badge">🔒 ISO 27001</span>
+            <span class="badge">✓ GDPR Compliant</span>
+            <span class="badge">⭐ SOC 2 Type II</span>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,115 @@
+<div *ngIf="open" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in"
+    (click)="onBackdropClick()" (keydown)="onKeydown($event)" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="dialog-title">
+
+    <button class="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in"
+        (click)="onDialogClick($event)" role="document">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 id="dialog-title" class="text-xl font-semibold text-[#070025]">
+                Editar Fechas de la Convocatoria
+            </h2>
+            <button (click)="close()" [disabled]="isLoading"
+                class="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors disabled:opacity-50"
+                aria-label="Cerrar">
+                <lucide-angular name="X" class="w-5 h-5"></lucide-angular>
+            </button>
+        </div>
+
+        <!-- Current Status Info -->
+        <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <p class="text-xs font-medium text-blue-900 mb-2">Estado Actual:</p>
+            <p *ngIf="convocatoria?.startDate" class="text-sm text-blue-800 flex items-center gap-2">
+                <lucide-angular name="Calendar" class="w-4 h-4"></lucide-angular>
+                Inicio: {{ convocatoria?.startDate| date:'dd/MM/yyyy' }}
+            </p>
+            <p *ngIf="convocatoria?.endDate" class="text-sm text-blue-800 flex items-center gap-2 mt-1">
+                <lucide-angular name="Clock" class="w-4 h-4"></lucide-angular>
+                Límite: {{ convocatoria?.endDate| date:'dd/MM/yyyy' }}
+            </p>
+        </div>
+
+        <!-- Form -->
+        <form (ngSubmit)="onSubmit()" class="space-y-4">
+
+            <!-- Start Date -->
+            <div>
+                <label for="start-date" class="block text-sm font-medium text-gray-700 mb-1">
+                    Fecha de Inicio
+                    <span class="text-gray-400 text-xs">(opcional)</span>
+                </label>
+                <input id="start-date" type="date" [(ngModel)]="startDateInput" name="startDate" [disabled]="isLoading"
+                    [class.border-red-500]="showErrors && !isStartDateValid"
+                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#02ab74] disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors" />
+
+                <p *ngIf="showErrors && !isStartDateValid" class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <lucide-angular name="AlertCircle" class="w-3 h-3"></lucide-angular>
+                    No puede ser en el pasado
+                </p>
+            </div>
+
+            <!-- End Date -->
+            <div>
+                <label for="end-date" class="block text-sm font-medium text-gray-700 mb-1">
+                    Fecha Límite
+                    <span class="text-gray-400 text-xs">(opcional)</span>
+                </label>
+                <input id="end-date" type="date" [(ngModel)]="endDateInput" name="endDate" [disabled]="isLoading"
+                    [class.border-red-500]="showErrors && !isEndDateValid"
+                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#02ab74] disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors" />
+
+                <p *ngIf="showErrors && !isEndDateValid" class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <lucide-angular name="AlertCircle" class="w-3 h-3"></lucide-angular>
+                    No puede ser en el pasado
+                </p>
+
+                <!-- Date Range Validation -->
+                <p *ngIf="showErrors && !isDateRangeValid" class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <lucide-angular name="AlertCircle" class="w-3 h-3"></lucide-angular>
+                    La fecha límite debe ser posterior a la de inicio
+                </p>
+            </div>
+
+            <!-- Global Error Message -->
+            <div *ngIf="showErrors && errorMessage" class="p-3 bg-red-50 rounded-lg border border-red-200">
+                <p class="text-sm text-red-800 flex items-start gap-2">
+                    <lucide-angular name="AlertCircle" class="w-4 h-4 mt-0.5 flex-shrink-0"></lucide-angular>
+                    <span>{{ errorMessage }}</span>
+                </p>
+            </div>
+
+            <!-- Preview of New Status -->
+            <div *ngIf="endDateInput && !showErrors" class="p-3 bg-green-50 rounded-lg border border-green-200">
+                <p class="text-xs font-medium text-green-900 mb-2">Nueva Fecha Límite:</p>
+                <p class="text-sm text-green-800 flex items-center gap-2">
+                    <lucide-angular name="CheckCircle" class="w-4 h-4"></lucide-angular>
+                    {{ getNewDeadlineStatus() }}
+                </p>
+            </div>
+
+            <!-- Info Box -->
+            <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p class="text-xs text-amber-800 flex items-start gap-2">
+                    <lucide-angular name="Info" class="w-4 h-4 mt-0.5 flex-shrink-0"></lucide-angular>
+                    <span>Ambas fechas son opcionales. Cambios afectarán a todos los colaboradores.</span>
+                </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" (click)="close()" [disabled]="isLoading"
+                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    Cancelar
+                </button>
+                <button type="submit" [disabled]="isLoading"
+                    class="px-4 py-2 bg-[#02ab74] hover:bg-[#02ab74]/90 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[140px] justify-center">
+                    <span *ngIf="isLoading"
+                        class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                    <lucide-angular *ngIf="!isLoading" name="Save" class="w-4 h-4"></lucide-angular>
+                    {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+                </button>
+            </div>
+        </form>
+    </button>
+</div>

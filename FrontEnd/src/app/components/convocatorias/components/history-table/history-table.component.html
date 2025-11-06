@@ -1,0 +1,136 @@
+<div class="p-6 bg-white rounded-lg border">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#070025] flex items-center">
+            <lucide-angular name="Clock" class="w-5 h-5 mr-2 text-[#02ab74]"></lucide-angular>
+            Historial de Cambios
+            <span class="ml-2 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">
+                {{ historyCount }}
+            </span>
+        </h3>
+    </div>
+
+    <!-- Empty State -->
+    <p *ngIf="historyCount === 0" class="text-gray-500 text-center py-8">
+        <lucide-angular name="Info" class="w-5 h-5 mx-auto mb-2 text-gray-400"></lucide-angular>
+        No hay actividad registrada aún
+    </p>
+
+    <!-- History Table -->
+    <div *ngIf="historyCount > 0" class="space-y-4">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="border-b bg-gray-50">
+                    <tr class="text-left text-sm text-gray-600">
+                        <th class="px-4 py-3 font-medium">Documento</th>
+                        <th class="px-4 py-3 font-medium">Acción</th>
+                        <th class="px-4 py-3 font-medium">Usuario</th>
+                        <th class="px-4 py-3 font-medium">Fecha y Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let entry of paginatedHistory; trackBy: trackByHistoryId"
+                        class="border-b hover:bg-gray-50 transition-colors last:border-b-0">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <lucide-angular name="FileText"
+                                    class="w-4 h-4 text-gray-400 flex-shrink-0"></lucide-angular>
+                                <span class="text-gray-800 font-medium">{{ entry.documentName }}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-md text-xs font-semibold inline-block" [ngClass]="{
+                'bg-green-100 text-green-800': entry.action === 'uploaded' || entry.action === 'created',
+                'bg-red-100 text-red-800': entry.action === 'deleted',
+                'bg-blue-100 text-blue-800': entry.action === 'updated' || entry.action === 'renamed',
+                'bg-purple-100 text-purple-800': entry.action === 'collaborator_added' || entry.action === 'collaborator_removed',
+                'bg-gray-100 text-gray-800': !['uploaded', 'created', 'deleted', 'updated', 'renamed', 'collaborator_added', 'collaborator_removed'].includes(entry.action),
+                'bg-yellow-100 text-yellow-800': entry.action === 'guide_uploaded' || entry.action === 'guide_deleted'
+              }">
+                                <span class="flex items-center gap-1">
+                                    <lucide-angular *ngIf="entry.action === 'uploaded' || entry.action === 'created'"
+                                        name="Upload" class="w-3 h-3"></lucide-angular>
+                                    <lucide-angular *ngIf="entry.action === 'deleted'" name="Trash2"
+                                        class="w-3 h-3"></lucide-angular>
+                                    <lucide-angular *ngIf="entry.action === 'updated' || entry.action === 'renamed'"
+                                        name="Edit2" class="w-3 h-3"></lucide-angular>
+                                    <lucide-angular *ngIf="entry.action === 'collaborator_added'" name="UserPlus"
+                                        class="w-3 h-3"></lucide-angular>
+                                    <lucide-angular *ngIf="entry.action === 'collaborator_removed'" name="UserMinus"
+                                        class="w-3 h-3"></lucide-angular>
+                                    <lucide-angular *ngIf="entry.action === 'guide_uploaded'" name="BookOpen"
+                                        class="w-3 h-3"></lucide-angular>
+                                    <lucide-angular *ngIf="entry.action === 'guide_deleted'" name="BookX"
+                                        class="w-3 h-3"></lucide-angular>
+                                    {{ getActionLabel(entry.action) }}
+                                </span>
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <lucide-angular name="User"
+                                    class="w-4 h-4 text-gray-400 flex-shrink-0"></lucide-angular>
+                                <span class="text-gray-700">{{ entry.user }}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2 text-sm text-gray-600">
+                                <lucide-angular name="Calendar"
+                                    class="w-4 h-4 text-gray-400 flex-shrink-0"></lucide-angular>
+                                <div>
+                                    <div class="font-medium">{{ formatDate(entry.date) }}</div>
+                                    <div class="text-xs text-gray-500">{{ formatTime(entry.date) }}</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div class="flex items-center justify-between border-t pt-4">
+            <div class="text-sm text-gray-600">
+                Mostrando <strong>{{ pageRangeStart }}–{{ pageRangeEnd }}</strong> de <strong>{{ historyCount
+                    }}</strong> entradas
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button (click)="prevPage()" [disabled]="currentPage === 1" class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors
+                 disabled:opacity-50 disabled:cursor-not-allowed
+                 bg-white border hover:bg-gray-50 text-gray-700">
+                    <lucide-angular name="ChevronLeft" class="w-4 h-4"></lucide-angular>
+                </button>
+
+                <span class="px-3 py-1 text-sm font-medium text-gray-700">
+                    Página {{ currentPage }} de {{ totalPages }}
+                </span>
+
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors
+                 disabled:opacity-50 disabled:cursor-not-allowed
+                 bg-white border hover:bg-gray-50 text-gray-700">
+                    <lucide-angular name="ChevronRight" class="w-4 h-4"></lucide-angular>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats (opcional, debajo de la paginación) -->
+    <div *ngIf="historyCount > 0" class="mt-4 pt-4 border-t grid grid-cols-4 gap-4 text-center text-sm">
+        <div>
+            <lucide-angular name="Upload" class="w-4 h-4 mx-auto mb-1 text-green-600"></lucide-angular>
+            <div class="text-gray-600">Cargadas: <strong>{{ getActionCount('uploaded') }}</strong></div>
+        </div>
+        <div>
+            <lucide-angular name="Plus" class="w-4 h-4 mx-auto mb-1 text-blue-600"></lucide-angular>
+            <div class="text-gray-600">Creadas: <strong>{{ getActionCount('created') }}</strong></div>
+        </div>
+        <div>
+            <lucide-angular name="Trash2" class="w-4 h-4 mx-auto mb-1 text-red-600"></lucide-angular>
+            <div class="text-gray-600">Eliminadas: <strong>{{ getActionCount('deleted') }}</strong></div>
+        </div>
+        <div>
+            <lucide-angular name="Users" class="w-4 h-4 mx-auto mb-1 text-purple-600"></lucide-angular>
+            <div class="text-gray-600">Colabs: <strong>{{ getActionCount('collaborator_added') }}</strong></div>
+        </div>
+    </div>
+</div>

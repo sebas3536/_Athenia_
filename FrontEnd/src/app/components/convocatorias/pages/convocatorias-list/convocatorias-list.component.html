@@ -1,0 +1,86 @@
+<!-- Header -->
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+  <!-- Título y descripción -->
+  <div class="flex-1">
+    <h1 class="text-4xl font-extrabold text-[#070025] mb-3">Gestión de Convocatorias</h1>
+    <p class="text-gray-700 text-sm md:text-base">
+      <!-- Badge según rol -->
+      <span *ngIf="userRole === 'admin'" class="inline-block mr-2 mb-1">
+        <span class="px-3 py-1 bg-blue-50 text-blue-800 font-medium text-xs rounded-full shadow-sm">Admin</span>
+      </span>
+      <span *ngIf="userRole === 'user'" class="inline-block mr-2 mb-1">
+        <span class="px-3 py-1 bg-green-50 text-green-800 font-medium text-xs rounded-full shadow-sm">Colaborador</span>
+      </span>
+      Crea y gestiona convocatorias con seguimiento de documentos requeridos
+    </p>
+  </div>
+
+  <!-- Botón principal -->
+  <div class="flex items-center gap-3">
+    <button 
+      *ngIf="canCreateConvocatorias"
+      (click)="openCreateDialog()"
+      [disabled]="isLoading"
+      class="flex items-center gap-2 px-5 py-2 bg-[#02ab74] hover:bg-[#02ab74]/90 text-white font-semibold rounded-lg shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+      <lucide-angular name="Plus" class="w-5 h-5"></lucide-angular>
+      Nueva Convocatoria
+    </button>
+
+    <div *ngIf="!canCreateConvocatorias" 
+      class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium shadow-sm">
+      <lucide-angular name="Lock" class="w-4 h-4"></lucide-angular>
+      Solo puedes ver convocatorias asignadas
+    </div>
+  </div>
+</div>
+
+
+<!-- Loading State -->
+<div *ngIf="isLoading && convocatorias.length === 0" class="flex items-center justify-center py-12">
+  <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
+</div>
+
+<!-- Empty State -->
+<div *ngIf="!isLoading && convocatorias.length === 0" class="p-12 text-center border-2 border-dashed rounded-lg">
+  <lucide-angular name="FolderOpen" class="w-16 h-16 mx-auto mb-4 text-gray-400"></lucide-angular>
+  
+  <!-- ✅ Mensajes diferentes según rol -->
+  <ng-container *ngIf="canCreateConvocatorias">
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">No hay convocatorias</h3>
+    <p class="text-gray-600 mb-4">
+      Crea tu primera convocatoria para comenzar a gestionar documentos
+    </p>
+    <button 
+      (click)="openCreateDialog()"
+      class="flex items-center gap-2 px-4 py-2 bg-[#02ab74] hover:bg-[#02ab74]/90 text-white rounded-lg transition-colors mx-auto">
+      <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+      Crear Convocatoria
+    </button>
+  </ng-container>
+
+  <!-- ✅ Si es colaborador pero no tiene convocatorias asignadas -->
+  <ng-container *ngIf="!canCreateConvocatorias">
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">Sin convocatorias asignadas</h3>
+    <p class="text-gray-600">
+      Un administrador debe asignarte a una convocatoria para que puedas colaborar
+    </p>
+  </ng-container>
+</div>
+
+<!-- GRID DE CARDS -->
+<div *ngIf="convocatorias.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <app-convocatoria-card
+    *ngFor="let conv of convocatorias; trackBy: trackByConvocatoriaId"
+    [convocatoria]="conv"
+    [isAdmin]="canDeleteConvocatorias"
+    (selectConvocatoria)="onSelectConvocatoria($event)">
+  </app-convocatoria-card>
+</div>
+
+<!-- Create Dialog - Solo visible si es admin -->
+<app-create-convocatoria-dialog
+  *ngIf="canCreateConvocatorias"
+  [(open)]="isCreateDialogOpen"
+  [isLoading]="isLoading"
+  (create)="onCreateConvocatoria($event)">
+</app-create-convocatoria-dialog>

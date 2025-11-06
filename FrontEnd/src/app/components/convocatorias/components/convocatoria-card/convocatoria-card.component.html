@@ -1,0 +1,65 @@
+<button type="button" (click)="onClick()"
+  class="p-3 bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group text-left w-full">
+
+  <!-- Header Icons -->
+  <div class="flex items-start justify-between mb-4">
+    <div class="p-3 bg-[#02ab74]/10 rounded-lg">
+      <lucide-angular name="FolderOpen" class="w-6 h-6 text-[#02ab74]">
+      </lucide-angular>
+    </div>
+    <lucide-angular name="ChevronRight" class="w-5 h-5 text-gray-400 group-hover:text-[#02ab74] transition-colors">
+    </lucide-angular>
+  </div>
+
+  <!-- Title & Description -->
+  <h3 class="text-lg font-semibold text-[#070025] mb-2">
+    {{ convocatoria.name }}
+  </h3>
+  <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+    {{ convocatoria.description || 'Sin descripción' }}
+  </p>
+  <!-- Deadline Status -->
+
+  <div *ngIf="convocatoria.endDate" class="mb-3 p-2 rounded-lg border-l-2 transition-colors" [ngClass]="deadlineColor">
+    <!-- Usamos el getter 'deadlineColor' para el color del deadline -->
+    <div class="flex items-center gap-2 text-xs">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span class="font-medium">{{ deadlineText }}</span> <!-- Mostramos el texto del deadline -->
+    </div>
+  </div>
+  <!-- Progress Section -->
+  <div class="space-y-3">
+    <div class="flex items-center justify-between text-sm">
+      <span class="text-gray-600">Progreso</span>
+      <span class="text-[#070025]">
+        {{ progress.completed }}/{{ progress.total }} documentos
+      </span>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-full bg-gray-200 rounded-full h-2">
+      <div class="bg-[#02ab74] h-2 rounded-full transition-all" [style.width.%]="progress.percentage" role="progressbar"
+        [attr.aria-valuenow]="progress.percentage" aria-valuemin="0" aria-valuemax="100">
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer: Status & Date -->
+  <div class="flex items-center gap-2 mt-4 pt-4 border-t">
+    <!-- Status Badge -->
+    <span class="px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1"
+      [ngClass]="utils.getStatusBadgeClass(isCompleted)">
+      <lucide-angular [name]="utils.getStatusIcon(isCompleted)" class="w-3 h-3">
+      </lucide-angular>
+      {{ utils.getStatusLabel(isCompleted) }}
+    </span>
+
+    <!-- Created Date -->
+    <span class="text-xs text-gray-500">
+      {{ formattedDate }}
+    </span>
+  </div>
+</button>

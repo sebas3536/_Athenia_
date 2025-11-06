@@ -1,0 +1,43 @@
+<!-- Contenedor principal: Altura completa (h-screen) y flex para el layout sidebar/content -->
+<div class="flex h-screen bg-gray-50 font-sans">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <div class="p-2 bg-[#02ab74] rounded-lg shadow-xl">
+                <lucide-angular class="w-6 h-6 text-white" name="bot"></lucide-angular>
+            </div>
+            <h1>Asistente Virtual IA</h1>
+        </div>
+    </header>
+    <!-- Contenedor Principal de la App -->
+    <div class="main-content">
+        <!-- Barra Lateral -->
+        <nav class="sidebar bg-white shadow-2xl pt-24"> 
+            <!-- Lista de Elementos de Navegación -->
+            <div class="p-2 flex flex-col justify-between h-full">
+                <div class="space-y-1">
+                    <button 
+                        *ngFor="let item of visibleNavItems"
+                        class="nav-item" 
+                        [ngClass]="{'active': activeItem === item.id}"
+                        (click)="setActive(item.id)">
+                        <lucide-angular [name]="item.icon"></lucide-angular>
+                        <span>{{ item.label }}</span>
+                    </button>
+                </div>
+                <!-- Item: Cerrar sesión (siempre visible) -->
+                <button 
+                    class="nav-item logout-item" 
+                    (click)="logout()" 
+                    [disabled]="isLoggingOut">
+                    <lucide-angular name="log-out"></lucide-angular>
+                    <span>{{ isLoggingOut ? 'Cerrando...' : 'Cerrar sesión' }}</span>
+                </button>
+            </div>
+        </nav>
+        <!-- Contenido principal -->
+        <section class="content p-8">
+            <router-outlet></router-outlet>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,376 @@
+<div class="space-y-6" role="main" aria-labelledby="dashboard-title">
+  <div class="flex items-center justify-between animate-fade-in-up stagger-1">
+    <div>
+      <h1 id="dashboard-title" class="text-[#070025] mb-2 text-2xl font-bold">
+        Dashboard de Documentos
+      </h1>
+      <p class="text-gray-600">
+        {{ isAdmin ? 'Visualización global de todos los usuarios' : 'Visualización y análisis de actividad de
+        documentos' }}
+      </p>
+    </div>
+
+    <div class="flex gap-2">
+      <button (click)="exportActivities()" [disabled]="isLoadingActivities || filteredActivities.length === 0"
+        class="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:shadow-lg smooth-transition disabled:opacity-50 disabled:cursor-not-allowed"
+        style="background: linear-gradient(to bottom right, #028a5e, #5a058f);" aria-label="Exportar actividades">
+        <lucide-angular name="Download" class="w-5 h-5"></lucide-angular>
+        <span>Exportar {{ isAdmin ? 'Todo' : 'Mis Datos' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="relative animate-fade-in-up stagger-2">
+    <input type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()"
+      class="w-full pl-10 pr-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#02ab74] focus:ring-2 focus:ring-[#02ab74] focus:ring-offset-1 focus:outline-none transition-colors"
+      [placeholder]="isAdmin ? 'Buscar por usuario o nombre de documento...' : 'Buscar en mis documentos...'"
+      aria-label="Buscar actividades">
+    <lucide-angular name="Search"
+      class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
+  </div>
+
+  <div *ngIf="isLoadingStats" class="text-center py-8">
+    <div class="inline-flex items-center gap-3">
+      <lucide-angular name="Loader" class="w-6 h-6 text-[#02ab74] spinner"></lucide-angular>
+      <p class="text-gray-600">Cargando estadísticas...</p>
+    </div>
+  </div>
+
+  <div *ngIf="errorStats" class="bg-red-50 border border-red-200 rounded-lg p-4 animate-scale-in" role="alert">
+    <div class="flex items-center gap-2 mb-2">
+      <lucide-angular name="AlertCircle" class="w-5 h-5 text-red-600"></lucide-angular>
+      <p class="text-red-700 font-medium">{{ errorStats }}</p>
+    </div>
+    <button (click)="loadStats()" class="mt-2 text-sm text-red-600 underline hover:text-red-800 smooth-transition"
+      aria-label="Reintentar carga de estadísticas">
+      Reintentar
+    </button>
+  </div>
+
+  <div *ngIf="stats && !isLoadingStats && showContent" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <button *ngFor="let type of documentTypes; let i = index" (click)="setActiveFilter(type)" [ngClass]="[
+          'p-4 rounded-xl border-2 smooth-transition card-hover animate-fade-in-up',
+          'stagger-' + (i + 3),
+          activeFilter === type 
+            ? 'border-' + documentColors[type] + '-500 bg-' + documentColors[type] + '-50 shadow-md scale-105' 
+            : 'border-gray-200 bg-white hover:border-' + documentColors[type] + '-300'
+        ]" [attr.aria-pressed]="activeFilter === type" [attr.aria-label]="'Filtrar por ' + type.toUpperCase()">
+      <div class="flex items-center gap-3">
+        <div [ngClass]="activeFilter === type 
+            ? 'p-2 rounded-lg bg-' + documentColors[type] + '-500 smooth-transition' 
+            : 'p-2 rounded-lg bg-' + documentColors[type] + '-100 smooth-transition'">
+          <lucide-angular name="FileText"
+            [class]="activeFilter === type ? 'w-5 h-5 text-white' : 'w-5 h-5 text-' + documentColors[type] + '-600'">
+          </lucide-angular>
+        </div>
+        <div class="text-left">
+          <p class="text-sm text-gray-600">{{ type.toUpperCase() }}</p>
+          <p [ngClass]="activeFilter === type 
+              ? 'text-xl font-semibold text-' + documentColors[type] + '-600 smooth-transition' 
+              : 'text-xl font-semibold text-[#070025] smooth-transition'">
+            {{ getDocumentCountByType(type) }}
+          </p>
+        </div>
+      </div>
+    </button>
+  </div>
+
+  <div *ngIf="showContent" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Gráfico Circular -->
+    <div class="p-6 border border-gray-200 rounded-xl bg-white shadow-sm card-hover animate-fade-in-up stagger-3">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-[#070025] text-lg font-semibold mb-1">Distribución de Documentos</h3>
+          <p class="text-sm text-gray-600">
+            {{ activeFilter === 'all' ? 'Por tipo de archivo' : 'Filtrado: ' + activeFilter.toUpperCase() }}
+            <span *ngIf="isAdmin" class="text-purple-600 font-medium"> (Global)</span>
+          </p>
+        </div>
+        <div class="p-2 rounded-lg smooth-transition"
+          style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+          <lucide-angular name="PieChart" class="w-5 h-5 text-white"></lucide-angular>
+        </div>
+      </div>
+
+      <div *ngIf="isLoadingStats" class="h-[280px] bg-gray-50 rounded-lg flex items-center justify-center">
+        <lucide-angular name="Loader" class="w-8 h-8 text-[#02ab74] spinner"></lucide-angular>
+      </div>
+
+      <div *ngIf="!isLoadingStats && hasPieChartData()" class="h-[280px] relative">
+        <canvas #pieChart id="pieChart" aria-label="Gráfico de distribución de documentos"></canvas>
+      </div>
+
+      <div *ngIf="!isLoadingStats && !hasPieChartData()"
+        class="h-[280px] bg-gray-50 rounded-lg flex items-center justify-center">
+        <div class="text-center">
+          <lucide-angular name="Inbox" class="w-12 h-12 text-gray-400 mx-auto mb-2"></lucide-angular>
+          <p class="text-gray-500 font-medium">No hay datos disponibles</p>
+          <p class="text-sm text-gray-400 mt-1">
+            {{ activeFilter === 'all'
+            ? 'No hay documentos para mostrar'
+            : 'No hay documentos de tipo ' + activeFilter.toUpperCase()
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoadingStats && hasPieChartData()" class="mt-4 pt-4 border-t border-gray-200">
+        <div class="flex justify-center gap-4 flex-wrap">
+          <div *ngFor="let item of getPieData()" class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" [style.background-color]="item.color"></div>
+            <span class="text-sm text-gray-600">{{ item.name }}: {{ item.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Líneas con Áreas -->
+    <div class="p-6 border border-gray-200 rounded-xl bg-white shadow-sm card-hover animate-fade-in-up stagger-4">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-[#070025] text-lg font-semibold mb-1">Tendencia de Documentos</h3>
+          <p class="text-sm text-gray-600">
+            Evolución por tipo de archivo
+            <span *ngIf="isAdmin" class="text-purple-600 font-medium"> (Global)</span>
+          </p>
+        </div>
+        <div class="p-2 rounded-lg smooth-transition"
+          style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+          <lucide-angular name="TrendingUp" class="w-5 h-5 text-white"></lucide-angular>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-4">
+        <button *ngFor="let range of timeRanges" (click)="setTimeRange(range)" [ngClass]="[
+        'px-4 py-2 rounded-lg text-sm smooth-transition',
+        timeRange === range 
+          ? 'bg-[#02ab74] text-white shadow-md' 
+          : 'border border-gray-300 text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74]'
+      ]" [attr.aria-pressed]="timeRange === range" [attr.aria-label]="'Seleccionar rango de tiempo: ' + range">
+          {{ range }}
+        </button>
+      </div>
+
+      <div *ngIf="isLoadingChart" class="h-[240px] bg-gray-50 rounded-lg flex items-center justify-center">
+        <lucide-angular name="Loader" class="w-8 h-8 text-[#02ab74] spinner"></lucide-angular>
+      </div>
+
+      <div *ngIf="!isLoadingChart && chartData.length > 0" class="h-[240px]">
+        <canvas #lineChart id="lineChart" aria-label="Gráfico de tendencia de documentos"></canvas>
+      </div>
+
+      <div *ngIf="!isLoadingChart && chartData.length === 0"
+        class="h-[240px] bg-gray-50 rounded-lg flex items-center justify-center">
+        <div class="text-center">
+          <lucide-angular name="Inbox" class="w-12 h-12 text-gray-400 mx-auto mb-2"></lucide-angular>
+          <p class="text-gray-500 font-medium">No hay datos disponibles</p>
+          <p class="text-sm text-gray-400 mt-1">No hay datos de tendencia para el período seleccionado</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showContent"
+    class="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm card-hover animate-fade-in-up stagger-5">
+    <div class="p-6 border-b border-gray-200 bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-[#070025] text-lg font-semibold mb-1">
+            Actividades Recientes
+            <span *ngIf="isAdmin" class="ml-2 text-sm font-normal text-purple-600">(Todos los usuarios)</span>
+          </h3>
+          <p class="text-sm text-gray-600">
+            {{ activeFilter === 'all'
+            ? 'Mostrando todas las actividades (' + filteredActivities.length + ')'
+            : 'Filtrado por ' + activeFilter.toUpperCase() + ' (' + filteredActivities.length + ')'
+            }}
+          </p>
+        </div>
+        <button (click)="loadRecentActivities()" [disabled]="isLoadingActivities"
+          class="p-2 hover:bg-white rounded-lg smooth-transition disabled:opacity-50"
+          aria-label="Actualizar actividades recientes">
+          <lucide-angular name="RefreshCcw"
+            [class]="isLoadingActivities ? 'w-5 h-5 text-gray-600 spinner' : 'w-5 h-5 text-gray-600'">
+          </lucide-angular>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isLoadingActivities" class="p-8 text-center">
+      <lucide-angular name="Loader" class="w-8 h-8 text-[#02ab74] spinner mx-auto mb-2"></lucide-angular>
+      <p class="text-gray-600">Cargando actividades...</p>
+    </div>
+
+    <div *ngIf="!isLoadingActivities" class="overflow-x-auto">
+      <table class="w-full" role="grid">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" scope="col">
+              Usuario
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" scope="col">
+              Documento
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" scope="col">
+              Tipo
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" scope="col">
+              Acción
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" scope="col">
+              Fecha y Hora
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let activity of paginatedActivities" class="hover:bg-gray-50 smooth-transition" role="row">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-3">
+                <ng-container *ngIf="getUserById(activity.user_id) as user; else noAvatar">
+                  <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
+                    [userPhotoUrl]="user.profile_photo_url">
+                  </app-profile-avatar>
+                </ng-container>
+                <!-- Fallback si no se encuentra el usuario -->
+                <ng-template #noAvatar>
+                  <div class="rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                    style="width: 2.5rem; height: 2.5rem; background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+                    {{ getUserInitials(activity.user_name) }}
+                  </div>
+                </ng-template>
+                <div>
+                  <span class="text-[#070025] font-medium">{{ activity.user_name }}</span>
+                  <p *ngIf="isAdmin && activity.user_email" class="text-xs text-gray-500">{{ activity.user_email }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <lucide-angular name="FileText" class="w-4 h-4 text-gray-400"></lucide-angular>
+                <span class="text-gray-900">{{ activity.document_name }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span [ngClass]="getFileTypeColorClass(activity.document_type)"
+                class="px-3 py-1 rounded-full text-sm font-medium">
+                {{ activity.document_type.toUpperCase() }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div
+                [ngClass]="['inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium', getActionColorClass(activity.action)]">
+                <lucide-angular [name]="getActionIcon(activity.action)" class="w-4 h-4"></lucide-angular>
+                <span class="capitalize">{{ activity.action }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+              <div>
+                <div>{{ formatDate(activity.timestamp) }}</div>
+                <div class="text-xs text-gray-500">{{ formatTime(activity.timestamp) }}</div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredActivities.length === 0">
+            <td colspan="5" class="px-6 py-8 text-center">
+              <lucide-angular name="Inbox" class="w-12 h-12 text-gray-300 mx-auto mb-2"></lucide-angular>
+              <p class="text-gray-500">No hay actividades recientes</p>
+              <p class="text-sm text-gray-400 mt-1">
+                {{ isAdmin ? 'No hay actividades de ningún usuario' : 'Las actividades aparecerán aquí cuando
+                interactúes con documentos' }}
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!isLoadingActivities && filteredActivities.length > 0"
+      class="p-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="text-sm text-gray-600">
+        Mostrando <span class="font-medium">{{ activitiesPageStart }}</span> -
+        <span class="font-medium">{{ activitiesPageEnd }}</span> de
+        <span class="font-medium">{{ totalActivitiesCount }}</span> actividades
+      </div>
+      <div class="flex gap-2 flex-wrap justify-center">
+        <button (click)="goToActivitiesPage(currentActivitiesPage - 1)" [disabled]="currentActivitiesPage === 1"
+          class="px-3 py-2 rounded-lg border border-gray-300 smooth-transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          aria-label="Página anterior">
+          <lucide-angular name="ChevronLeft" class="w-5 h-5"></lucide-angular>
+        </button>
+
+        <button *ngFor="let page of getActivitiesPageNumbers()" (click)="goToActivitiesPage(page)" [ngClass]="[
+              'px-4 py-2 rounded-lg smooth-transition min-w-[40px]',
+              page === currentActivitiesPage 
+                ? 'page-active shadow-md' 
+                : page === '...' 
+                  ? 'border-0 cursor-default' 
+                  : 'border border-gray-300 text-gray-600 hover:bg-gray-100'
+            ]" [disabled]="page === '...' || page === currentActivitiesPage"
+          [attr.aria-label]="page === '...' ? 'Más páginas' : 'Ir a página ' + page"
+          [attr.aria-current]="page === currentActivitiesPage ? 'page' : null">
+          {{ page }}
+        </button>
+
+        <button (click)="goToActivitiesPage(currentActivitiesPage + 1)"
+          [disabled]="currentActivitiesPage === totalActivitiesPages"
+          class="px-3 py-2 rounded-lg border border-gray-300 smooth-transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          aria-label="Página siguiente">
+          <lucide-angular name="ChevronRight" class="w-5 h-5"></lucide-angular>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="errorActivities" class="p-6 bg-red-50" role="alert">
+      <div class="flex items-center gap-2 mb-2">
+        <lucide-angular name="AlertCircle" class="w-5 h-5 text-red-600"></lucide-angular>
+        <p class="text-red-700 font-medium">{{ errorActivities }}</p>
+      </div>
+      <button (click)="loadRecentActivities()"
+        class="mt-2 text-sm text-red-600 underline hover:text-red-800 smooth-transition"
+        aria-label="Reintentar carga de actividades">
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="stats && !isLoadingStats && showContent" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="p-4 rounded-xl border border-blue-200 bg-blue-50 card-hover animate-fade-in-up stagger-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-blue-700 font-medium mb-1">
+            {{ isAdmin ? 'Hoy (Global)' : 'Hoy' }}
+          </p>
+          <p class="text-3xl font-bold text-blue-900">{{ stats.documentsToday }}</p>
+          <p class="text-xs text-blue-600 mt-1">documentos subidos</p>
+        </div>
+        <lucide-angular name="CalendarDays" class="w-10 h-10 text-blue-600 opacity-50"></lucide-angular>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl border border-green-200 bg-green-50 card-hover animate-fade-in-up stagger-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-green-700 font-medium mb-1">
+            {{ isAdmin ? 'Esta Semana (Global)' : 'Esta Semana' }}
+          </p>
+          <p class="text-3xl font-bold text-green-900">{{ stats.documentsThisWeek }}</p>
+          <p class="text-xs text-green-600 mt-1">documentos subidos</p>
+        </div>
+        <lucide-angular name="Calendar" class="w-10 h-10 text-green-600 opacity-50"></lucide-angular>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl border border-purple-200 bg-purple-50 card-hover animate-fade-in-up stagger-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-purple-700 font-medium mb-1">
+            {{ isAdmin ? 'Almacenamiento (Global)' : 'Almacenamiento' }}
+          </p>
+          <p class="text-3xl font-bold text-purple-900">{{ formatBytes(stats.totalSize) }}</p>
+          <p class="text-xs text-purple-600 mt-1">espacio utilizado</p>
+        </div>
+        <lucide-angular name="HardDrive" class="w-10 h-10 text-purple-600 opacity-50"></lucide-angular>
+      </div>
+    </div>
+  </div>
+</div>

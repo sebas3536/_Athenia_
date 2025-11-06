@@ -1,0 +1,11 @@
+{
+  "login": {
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?"
+  },
+  "dashboard": {
+    "welcomeMessage": "Bienvenido a tu panel de control"
+  }
+}

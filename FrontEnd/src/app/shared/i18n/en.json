@@ -1,0 +1,11 @@
+{
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "submit": "Log In",
+    "forgotPassword": "Forgot Password?"
+  },
+  "dashboard": {
+    "welcomeMessage": "Welcome to your Dashboard"
+  }
+}

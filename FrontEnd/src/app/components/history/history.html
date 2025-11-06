@@ -1,0 +1,172 @@
+<div class="space-y-8">
+  <!-- Header -->
+  <div>
+    <h1 class="text-[#070025] mb-2 text-2xl font-bold">Historial de Actividad</h1>
+    <p class="text-gray-600 mb-6">
+      Revisa todas las acciones realizadas en tu cuenta
+    </p>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let stat of stats" class="p-6 border border-gray-200 rounded-xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{{ stat.label }}</p>
+          <p class="text-[#070025] text-2xl font-bold">{{ stat.value }}</p>
+        </div>
+        <div [class]="'p-3 rounded-lg ' + stat.color">
+          <lucide-angular [name]="stat.icon" class="w-6 h-6 text-white"></lucide-angular>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="p-6 border border-gray-200 rounded-xl">
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1 relative">
+        <lucide-angular name="search" class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
+        <input
+          type="text"
+          placeholder="Buscar en el historial..."
+          [(ngModel)]="searchQuery"
+          (input)="filterActivities()"
+          class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
+        />
+      </div>
+      <div class="sm:w-64">
+        <div class="relative">
+          <select
+            [(ngModel)]="filterType"
+            (change)="filterActivities()"
+            class="w-full appearance-none pl-10 pr-10 py-2 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none bg-white"
+          >
+            <option value="all">Todas las acciones</option>
+            <option value="upload">Subidas</option>
+            <option value="download">Descargas</option>
+            <option value="delete">Eliminados</option>
+            <option value="error">Errores</option>
+          </select>
+          <lucide-angular name="filter" class="absolute left-2 top-1/2 -translate-y-1/4 w-4 h-4 text-gray-600 pointer-events-none"></lucide-angular>
+          <div class="absolute right-3  top-1/2 -translate-y-1/4 pointer-events-none">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
+    <p class="text-gray-600 mt-4">Cargando actividades...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage && !loading" class="p-6 border border-red-200 rounded-xl bg-red-50">
+    <div class="flex items-center space-x-3">
+      <lucide-angular name="x-circle" class="w-5 h-5 text-red-500"></lucide-angular>
+      <p class="text-red-700">{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Activity Timeline -->
+  <div *ngIf="!loading && !errorMessage" class="border border-gray-200 rounded-xl overflow-hidden">
+    <div class="p-6 border-b border-gray-200 bg-gray-50">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-[#02ab74] rounded-lg">
+          <lucide-angular name="history" class="w-5 h-5 text-white"></lucide-angular>
+        </div>
+        <h2 class="text-[#070025] text-xl font-semibold">Actividad Reciente</h2>
+      </div>
+    </div>
+
+    <div class="divide-y divide-gray-200">
+      <ng-container *ngIf="filteredActivities.length > 0; else noResults">
+        <div *ngFor="let activity of filteredActivities" class="p-6 hover:bg-gray-50 transition-colors">
+          <div class="flex items-start space-x-4">
+            <!-- Icon -->
+            <div [class]="'p-3 rounded-lg flex-shrink-0 ' + getActivityColor(activity.action)">
+              <lucide-angular [name]="getActivityIcon(activity.action)" class="w-5 h-5 text-white"></lucide-angular>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between mb-1">
+                <h3 class="text-[#070025] font-semibold">{{ getActionLabel(activity.action) }}</h3>
+                <lucide-angular 
+                  [name]="getStatusIcon(activity.action)" 
+                  [class]="'w-5 h-5 flex-shrink-0 ml-2 ' + getStatusColor(activity.action)"
+                ></lucide-angular>
+              </div>
+              <p class="text-gray-600 mb-2 break-words">
+                {{ activity.document_name || 'Sin nombre' }}
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <lucide-angular name="clock" class="w-4 h-4 mr-1"></lucide-angular>
+                {{ activity.timestamp | date:'d MMM yyyy, HH:mm' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noResults>
+        <div class="p-12 text-center">
+          <div class="inline-flex p-4 bg-gray-100 rounded-full mb-4">
+            <lucide-angular name="search" class="w-8 h-8 text-gray-400"></lucide-angular>
+          </div>
+          <h3 class="text-[#070025] text-lg font-semibold mb-2">No se encontraron resultados</h3>
+          <p class="text-gray-600">
+            Intenta con otros términos de búsqueda o filtros
+          </p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Load More -->
+    <div *ngIf="filteredActivities.length > 0" class="p-6 border-t border-gray-200 bg-gray-50">
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-gray-600">
+          Mostrando {{ filteredActivities.length }} de {{ activities.length }} actividades
+        </p>
+        <button 
+          (click)="loadMore()"
+          [disabled]="loadingMore"
+          class="px-4 py-2 border border-gray-200 rounded-lg hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ loadingMore ? 'Cargando...' : 'Cargar Más' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Options -->
+  <div class="p-6 border border-gray-200 rounded-xl">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h3 class="text-[#070025] font-semibold mb-1">Exportar Historial</h3>
+        <p class="text-sm text-gray-600">
+          Descarga un reporte completo de tu actividad
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <button 
+          (click)="exportPDF()"
+          class="px-4 py-2 border border-gray-200 rounded-lg hover:border-[#02ab74] hover:text-[#02ab74] transition-colors"
+        >
+          Exportar PDF
+        </button>
+        <button 
+          (click)="exportExcel()"
+          class="px-4 py-2 bg-[#02ab74] hover:bg-[#028a5f] text-white rounded-lg transition-colors"
+        >
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

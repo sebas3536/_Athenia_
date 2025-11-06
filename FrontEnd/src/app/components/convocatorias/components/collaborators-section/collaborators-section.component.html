@@ -1,0 +1,48 @@
+<div class="p-6 bg-white rounded-lg border mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#070025] flex items-center gap-2">
+            <lucide-angular name="Users" class="w-5 h-5 text-[#02ab74]"></lucide-angular>
+            Colaboradores
+        </h3>
+        <button (click)="addCollaborator.emit()" *ngIf="isAdmin"
+            class="flex items-center gap-2 px-3 py-1.5 text-sm border border-[#02ab74] text-[#02ab74] hover:bg-[#02ab74]/10 rounded-lg transition-colors">
+            <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+            Agregar
+        </button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="collaborators.length === 0" class="text-center py-8 border-2 border-dashed rounded-lg">
+        <lucide-angular name="Users" class="w-12 h-12 mx-auto mb-3 text-gray-400"></lucide-angular>
+        <p class="text-gray-600 mb-4">No hay colaboradores asignados</p>
+        <button (click)="addCollaborator.emit()" *ngIf="isAdmin"
+            class="inline-flex items-center gap-2 px-4 py-2 border border-[#02ab74] text-[#02ab74] hover:bg-[#02ab74]/10 rounded-lg transition-colors">
+            <lucide-angular name="Plus" class="w-4 h-4"></lucide-angular>
+            Agregar Colaborador
+        </button>
+    </div>
+
+    <!-- Lista de colaboradores -->
+    <div *ngIf="collaborators.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div *ngFor="let collab of collaborators"
+            class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center gap-3">
+                <app-profile-avatar [size]="2" [showEditControls]="false" [userPhotoUrl]="collab.profile_photo_url"
+                    [userData]="collab" class="flex-shrink-0"></app-profile-avatar>
+                <div>
+                    <p class="font-medium text-[#070025] text-sm">{{ collab.name }}</p>
+                    <p class="text-xs text-gray-500">{{ collab.email }}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-1 text-xs font-medium rounded" [ngClass]="utils.getRoleBadgeClass(collab.role)">
+                    {{ utils.getRoleLabel(collab.role) }}
+                </span>
+                <button *ngIf="isAdmin" (click)="removeCollaborator.emit(collab.id)"
+                    class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
+                    <lucide-angular name="X" class="w-4 h-4"></lucide-angular>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
