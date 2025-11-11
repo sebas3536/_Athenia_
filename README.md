@@ -1,10 +1,10 @@
-# 🚀 ATHENIA - Asistente Inteligente de Consulta para AudacIA
+# ATHENIA - Asistente Inteligente de Consulta para AudacIA
 
 > **Una solución empresarial revolucionaria que centraliza la gestión de documentos y consultas mediante Inteligencia Artificial generativa, transformando la manera en que las organizaciones acceden y procesan información crítica.**
 
 ---
 
-## 📊 Visión General del Proyecto
+##  Visión General del Proyecto
 
 ATHENIA es una plataforma integral de gestión de documentos e consultas potenciada por IA, diseñada para resolver la fragmentación informativa en entornos académicos y empresariales. Combina un **frontend moderno en Angular**, un **backend robusto en FastAPI**, y un **motor de IA generativa con Google Gemini**, para ofrecer respuestas precisas y contextualizadas en tiempo real.
 
@@ -12,25 +12,25 @@ El proyecto surge de la necesidad de **AudacIA** —iniciativa enfocada en intel
 
 ---
 
-## 🎯 Propósito y Alcance
+##  Propósito y Alcance
 
 ### Propósito Principal
 Implementar un asistente virtual inteligente que **automatice y optimice** la resolución de consultas en AudacIA, reduciendo tiempos de respuesta en un **70%** y mejorando la satisfacción del usuario a un **NPS ≥ 8.5**, mediante tecnologías de procesamiento de lenguaje natural e inteligencia artificial con **precisión mínima del 85%** y disponibilidad **24/7**.
 
 ### Alcance Definido
-- ✅ Desarrollo de MVP funcional en **13 semanas** (1 sep - 30 nov 2025)
-- ✅ Presupuesto controlado: **$50,000 USD**
-- ✅ Interfaces web y móvil optimizadas
-- ✅ Integración con APIs externas prioritarias
-- ✅ Autenticación segura con 2FA
-- ✅ Encriptación AES-256 de documentos
-- ✅ Auditoría completa de operaciones
+-  Desarrollo de MVP funcional en **13 semanas** (1 sep - 30 nov 2025)
+-  Presupuesto controlado: **$50,000 USD**
+-  Interfaces web y móvil optimizadas
+-  Integración con APIs externas prioritarias
+-  Autenticación segura con 2FA
+-  Encriptación AES-256 de documentos
+-  Auditoría completa de operaciones
 
 ---
 
-## 🌟 Características Principales
+##  Características Principales
 
-### 🔐 Seguridad Empresarial
+###  Seguridad Empresarial
 - **Autenticación JWT** con tokens de acceso y refresco
 - **Verificación de dos factores (2FA)** con códigos TOTP
 - **Cifrado AES-256** de documentos en reposo
@@ -38,7 +38,7 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 - **Auditoría completa** de todas las operaciones
 - **Bloqueo temporal** tras intentos fallidos de acceso
 
-### 📁 Gestión Inteligente de Documentos
+###  Gestión Inteligente de Documentos
 - Carga múltiple de archivos (PDF, DOCX, TXT)
 - Extracción automática de texto con OCR
 - **Clasificación automática** de documentos
@@ -46,7 +46,7 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 - Descarga segura con streaming
 - Control de permisos por usuario
 
-### 🤖 Motor IA Generativa (ATHENIA)
+###  Motor IA Generativa (ATHENIA)
 - **RAG (Retrieval-Augmented Generation)** con Google Gemini
 - Búsqueda semántica con embeddings vectoriales
 - **Caché dual** (exacto + semántico) para optimización
@@ -55,7 +55,7 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 - Conversaciones con historial completo
 - Respuestas contextualizadas y precisas
 
-### 👥 Gestión de Usuarios y Colaboración
+###  Gestión de Usuarios y Colaboración
 - Sistema de roles flexible (Admin, Editor, Usuario)
 - Gestión de colaboradores en convocatorias
 - Preferencias personalizables por usuario
@@ -63,7 +63,7 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 - Alertas de login inusual
 - Gestión de sesiones activas en múltiples dispositivos
 
-### 📋 Gestión de Convocatorias
+###  Gestión de Convocatorias
 - Creación y edición de procesos de recolección
 - Checklist de documentos requeridos
 - Documento guía opcional
@@ -72,7 +72,7 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 - Cálculo automático de porcentaje de completitud
 - Indicadores de progreso en tiempo real
 
-### 📊 Dashboard y Análisis
+###  Dashboard y Análisis
 - Panel de control intuitivo
 - Visualización en tiempo real del estado
 - Alertas de plazos próximos
@@ -81,7 +81,7 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 
 ---
 
-## 🛠️ Arquitectura Técnica
+##  Arquitectura Técnica
 
 ### Stack Tecnológico
 
@@ -117,11 +117,11 @@ Implementar un asistente virtual inteligente que **automatice y optimice** la re
 
 ---
 
-## 📂 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 athenia/
-├── 📱 Frontend (Angular)
+├──  Frontend (Angular)
 │   ├── app/
 │   │   ├── components/
 │   │   │   ├── authentication/       # Sistema de autenticación
@@ -140,7 +140,7 @@ athenia/
 │   │       └── utils/                # Utilidades generales
 │   └── assets/
 │
-├── 🔧 Backend (FastAPI)
+├──  Backend (FastAPI)
 │   ├── api/
 │   │   └── v1/
 │   │       ├── auth_endpoints/       # Rutas de autenticación
@@ -168,7 +168,7 @@ athenia/
 │   │       └── semantic_cache.py     # Caché semántico
 │   └── main.py                       # Punto de entrada
 │
-└── ⚙️ Configuración
+└──  Configuración
     ├── .env                          # Variables de entorno
     ├── requirements.txt              # Dependencias
     ├── pytest.ini                    # Configuración tests
@@ -177,7 +177,7 @@ athenia/
 
 ---
 
-## 🚀 Instalación Rápida
+##  Instalación Rápida
 
 ### Requisitos Previos
 - Node.js v18+ y npm v9+
@@ -233,7 +233,7 @@ npm start
 
 ---
 
-## 📊 Objetivos y Métricas Clave
+##  Objetivos y Métricas Clave
 
 ### Objetivos Específicos
 | Objetivo | Meta | Fecha Límite |
@@ -246,16 +246,16 @@ npm start
 | Prototipo desplegado | Sistema operativo | 30 nov 2025 |
 
 ### Métricas de Éxito
-- ⚡ **Tiempo de respuesta**: ≤ 2 segundos por consulta
-- 🎯 **Precisión del modelo**: ≥ 85% (F1-score)
-- 😊 **Satisfacción del usuario**: NPS ≥ 8.5
-- 📈 **Reducción de tiempo**: 70% menos respecto a búsqueda manual
-- 🔒 **Uptime**: 99.5% de disponibilidad
-- 💾 **Optimización de caché**: 60-90% menos llamadas API
+-  **Tiempo de respuesta**: ≤ 2 segundos por consulta
+-  **Precisión del modelo**: ≥ 85% (F1-score)
+-  **Satisfacción del usuario**: NPS ≥ 8.5
+-  **Reducción de tiempo**: 70% menos respecto a búsqueda manual
+-  **Uptime**: 99.5% de disponibilidad
+-  **Optimización de caché**: 60-90% menos llamadas API
 
 ---
 
-## 💻 Uso y Endpoints Principales
+##  Uso y Endpoints Principales
 
 ### Autenticación
 ```bash
@@ -308,11 +308,11 @@ curl -X GET "http://localhost:8000/api/v1/athenia/conversations" \
   -H "Authorization: Bearer TOKEN"
 ```
 
-📚 **Documentación interactiva completa**: http://localhost:8000/docs
+ **Documentación interactiva completa**: http://localhost:8000/docs
 
 ---
 
-## 🔒 Seguridad y Cumplimiento
+##  Seguridad y Cumplimiento
 
 ### Mecanismos de Seguridad Implementados
 
@@ -327,14 +327,14 @@ curl -X GET "http://localhost:8000/api/v1/athenia/conversations" \
 
 ### Cumplimiento Regulatorio
 
-- ✅ **GDPR**: Derechos ARCO implementados
-- ✅ **Ley 1581 (Colombia)**: Protección de datos personales
-- ✅ **ISO/IEC 12207**: Ciclo de vida de software
-- ✅ **OWASP Top 10**: Protecciones contra vulnerabilidades comunes
+-  **GDPR**: Derechos ARCO implementados
+-  **Ley 1581 (Colombia)**: Protección de datos personales
+-  **ISO/IEC 12207**: Ciclo de vida de software
+-  **OWASP Top 10**: Protecciones contra vulnerabilidades comunes
 
 ---
 
-## 📈 Cronograma del Proyecto
+##  Cronograma del Proyecto
 
 ```
 Fase 1: Requerimientos (Sep 1-7)
@@ -374,7 +374,7 @@ Fase 5: Despliegue (Nov 17-30)
 
 ---
 
-## 🎓 Equipo del Proyecto
+##  Equipo del Proyecto
 
 | Rol | Responsable | Contacto |
 |-----|-------------|----------|
@@ -384,19 +384,19 @@ Fase 5: Despliegue (Nov 17-30)
 
 ---
 
-## 📚 Documentación Completa
+##  Documentación Completa
 
-- 🔧 [Backend - Instalación y Configuración](./docs/backend-setup.md)
-- 🎨 [Frontend - Guía de Desarrollo](./docs/frontend-setup.md)
-- 🤖 [IA y Machine Learning](./docs/athenia-ml.md)
-- 📋 [Especificación de Requisitos](./docs/requirements.md)
-- 🏗️ [Arquitectura del Sistema](./docs/architecture.md)
-- 🧪 [Guía de Testing](./docs/testing.md)
-- 🚀 [Despliegue en Producción](./docs/deployment.md)
+-  [Backend - Instalación y Configuración](./docs/backend-setup.md)
+-  [Frontend - Guía de Desarrollo](./docs/frontend-setup.md)
+-  [IA y Machine Learning](./docs/athenia-ml.md)
+-  [Especificación de Requisitos](./docs/requirements.md)
+-  [Arquitectura del Sistema](./docs/architecture.md)
+-  [Guía de Testing](./docs/testing.md)
+-  [Despliegue en Producción](./docs/deployment.md)
 
 ---
 
-## 🔧 Scripts Disponibles
+##  Scripts Disponibles
 
 ```bash
 # Desarrollo
@@ -415,19 +415,19 @@ pytest --cov              # Cobertura de tests
 
 ---
 
-## 📊 Estadísticas del Proyecto
+##  Estadísticas del Proyecto
 
-- 🗄️ **Modelos ORM**: 20+
-- 🔌 **Endpoints API**: 50+
-- 🛠️ **Servicios**: 15+
-- 🔄 **Handlers**: 12+
-- 📈 **Cobertura de tests**: 80%+
-- 💰 **Presupuesto**: $50,000 USD
-- ⏱️ **Duración**: 13 semanas (Sep-Nov 2025)
+-  **Modelos ORM**: 20+
+-  **Endpoints API**: 50+
+-  **Servicios**: 15+
+-  **Handlers**: 12+
+-  **Cobertura de tests**: 80%+
+-  **Presupuesto**: $50,000 USD
+-  **Duración**: 13 semanas (Sep-Nov 2025)
 
 ---
 
-## 🤝 Contribuciones y Soporte
+##  Contribuciones y Soporte
 
 ### Reportar Bugs
 1. Crear issue en GitHub con:
@@ -437,9 +437,9 @@ pytest --cov              # Cobertura de tests
    - Sistema operativo
 
 ### Obtener Ayuda
-- 📖 [Documentación técnica](./docs)
-- 💬 [Foro de discusión](https://github.com/sebas3536/athenia/discussions)
-- 📧 Contactar al equipo de desarrollo
+-  [Documentación técnica](./docs)
+-  [Foro de discusión](https://github.com/sebas3536/athenia/discussions)
+-  Contactar al equipo de desarrollo
 
 ### Recursos Útiles
 - [FastAPI Documentation](https://fastapi.tiangolo.com)
@@ -450,7 +450,7 @@ pytest --cov              # Cobertura de tests
 
 ---
 
-## 📝 Licencia
+##  Licencia
 
 Este proyecto está desarrollado como trabajo de práctica profesional en la **Facultad de Ingenierías, Programa de Ingeniería de Sistemas** de la Universidad Simon Bolivar, Barranquilla, Colombia.
 
@@ -458,7 +458,7 @@ Este proyecto está desarrollado como trabajo de práctica profesional en la **F
 
 ---
 
-## 🎉 Agradecimientos
+##  Agradecimientos
 
 Construido con tecnologías de clase mundial:
 - **FastAPI** - Framework web moderno y rápido
@@ -478,7 +478,7 @@ Para más información, visita [AudacIA.ai](https://audacia.ai) o contacta al eq
 
 <div align="center">
 
-### 🚀 ATHENIA - Transformando la Inteligencia Colectiva
+###  ATHENIA - Transformando la Inteligencia Colectiva
 
 *"Centralizar, automatizar, innovar"*
 
